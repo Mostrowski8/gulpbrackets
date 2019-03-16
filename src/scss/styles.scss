@@ -1,0 +1,32 @@
+// Variable Overrides 
+
+// Bootstrap Sass Imports
+@import "node_modules/bootstrap/scss/bootstrap";
+
+// Variable Overrides 
+$theme-colors: (
+  "primary": #d95700
+);
+
+$grid-gutter-width: 1000px;
+
+.bracketscontainer { 
+  background-color: blue;
+  padding-bottom: 40px;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+.bracket {
+  text-align: center;
+  background-color: white;
+ // min-height: 50px;
+  overflow-wrap: break-word;
+  padding: 10px;
+ min-height: 100%;
+}
+
+.bracketsmodule {
+  padding-top: 20px; 
+  background-color: blue;
+}
