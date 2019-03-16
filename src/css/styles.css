@@ -6312,6 +6312,15 @@ a.text-dark:hover, a.text-dark:focus {
     color: inherit;
     border-color: #dee2e6; } }
 
+.bracketsmodule {
+  text-align: center;
+  padding-top: 40px;
+  background-color: blue; }
+  .bracketsmodule h1 {
+    color: white; }
+  .bracketsmodule .subheading {
+    color: white; }
+
 .bracketscontainer {
   background-color: blue;
   padding-bottom: 40px;
@@ -6322,9 +6331,5 @@ a.text-dark:hover, a.text-dark:focus {
   text-align: center;
   background-color: white;
   overflow-wrap: break-word;
-  padding: 10px;
+  padding: 30px;
   min-height: 100%; }
-
-.bracketsmodule {
-  padding-top: 20px;
-  background-color: blue; }
