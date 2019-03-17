@@ -1059,7 +1059,12 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],25:[function(require,module,exports){
+let drupal = "<svg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='70px' height='70px' x='0px' y='0px'  viewBox='-249 83.1 381 416' enable-background='new -249 83.1 381 416' xml:space='preserve'><g><g><path fill='#cccccc' d='M-69.7,312.5c-29.1,0-52.7,23.6-52.7,52.7c0,29.1,23.6,52.7,52.7,52.7c29.1,0,52.7-23.6,52.7-52.7 C-17,336.1-40.6,312.5-69.7,312.5z'/> </g> <g> <path fill='#cccccc' d='M-4.1,302.4c15.6,16.3,25.2,38.4,25.2,62.8c0,30.9-15.4,58.1-38.9,74.5c43.5-13.4,79.5-46.1,95.6-85.7 c22.3-54.8,1.5-96-33.3-133.4c1.1,4.8,1.7,9.9,1.7,15C46.1,267.4,24.9,294.1-4.1,302.4z'/> </g> <g> <path fill='#cccccc' d='M-63.7,235.7c0,22.3,18.1,40.3,40.3,40.3S17,257.9,17,235.7c0-22.3-18.1-40.3-40.3-40.3 S-63.7,213.4-63.7,235.7z'/> </g> <g> <path fill='#cccccc' d='M-139.2,423.7c-13.3-15.8-21.3-36.2-21.3-58.5c0-46.5,34.9-84.8,80-90.1c-7.7-11.2-12.3-24.8-12.3-39.4c0-38.4,31.1-69.4,69.5-69.4c3.2,0,6.3,0.2,9.3,0.6c-22.7-19.6-45.4-39.5-63.3-61.2c9.1,95.2-86.7,60.6-122.2,148.4C-223.2,312.9-201.8,385.6-139.2,423.7z'/></g></g></svg>";
+
+module.exports = drupal;
+},{}],26:[function(require,module,exports){
 const LoremIpsum = require("lorem-ipsum").LoremIpsum;
+const drupal = require('./../img/drupal')
 const lorem = new LoremIpsum({
     sentencesPerParagraph: {
       max: 8,
@@ -1072,61 +1077,90 @@ const lorem = new LoremIpsum({
   });
 
 
-let brackets = {
-    maincolor: "primary",
+
+let bluebrackets = {
+  maincolor: "primary",
     mainclass: "mainclass",
-    mainheading: lorem.generateWords(1),
-    subheading: lorem.generateWords(6),
+    mainheading: "Heading",
+    content: lorem.generateWords(6),
+    subheading: false,
+    reddot: true,
     bracketsarray: [
     {
-        heading: "<h5>"+lorem.generateWords(1)+"</h5>",
+        heading: "<h5>Heading</h5>",
         content: "<p>"+lorem.generateWords(10)+"</p>",
-        picture: "<svg width='60' height='60' viewBox='0 0 256 255' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet'><path d='M18.124 127.5c0 43.296 25.16 80.711 61.646 98.442L27.594 82.986a108.965 108.965 0 0 0-9.47 44.514zm183.221-5.52c0-13.517-4.856-22.879-9.02-30.165-5.545-9.01-10.742-16.64-10.742-25.65 0-10.055 7.626-19.415 18.368-19.415.485 0 .944.06 1.417.088-19.46-17.829-45.387-28.714-73.863-28.714-38.213 0-71.832 19.606-91.39 49.302 2.566.077 4.984.13 7.039.13 11.44 0 29.15-1.387 29.15-1.387 5.897-.348 6.592 8.312.702 9.01 0 0-5.926.697-12.52 1.042L100.32 194.7l23.937-71.79-17.042-46.692c-5.89-.345-11.47-1.042-11.47-1.042-5.894-.346-5.203-9.358.691-9.01 0 0 18.064 1.388 28.811 1.388 11.44 0 29.151-1.388 29.151-1.388 5.9-.348 6.594 8.312.702 9.01 0 0-5.938.697-12.52 1.042l39.529 117.581 10.91-36.458c4.728-15.129 8.327-25.995 8.327-35.36zm-71.921 15.088l-32.818 95.363a109.376 109.376 0 0 0 30.899 4.456c12.737 0 24.952-2.202 36.323-6.2a9.605 9.605 0 0 1-.779-1.507l-33.625-92.112zm94.058-62.045c.47 3.484.737 7.224.737 11.247 0 11.1-2.073 23.577-8.317 39.178l-33.411 96.6c32.518-18.963 54.39-54.193 54.39-94.545.002-19.017-4.856-36.9-13.4-52.48zM127.505 0C57.2 0 0 57.196 0 127.5c0 70.313 57.2 127.507 127.505 127.507 70.302 0 127.51-57.194 127.51-127.507C255.014 57.196 197.808 0 127.506 0zm0 249.163c-67.08 0-121.659-54.578-121.659-121.663 0-67.08 54.576-121.654 121.659-121.654 67.078 0 121.652 54.574 121.652 121.654 0 67.085-54.574 121.663-121.652 121.663z' fill='#464342'/></svg>",
+        picture: "<svg width='60' height='60' viewBox='0 0 256 255' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet'><path d='M18.124 127.5c0 43.296 25.16 80.711 61.646 98.442L27.594 82.986a108.965 108.965 0 0 0-9.47 44.514zm183.221-5.52c0-13.517-4.856-22.879-9.02-30.165-5.545-9.01-10.742-16.64-10.742-25.65 0-10.055 7.626-19.415 18.368-19.415.485 0 .944.06 1.417.088-19.46-17.829-45.387-28.714-73.863-28.714-38.213 0-71.832 19.606-91.39 49.302 2.566.077 4.984.13 7.039.13 11.44 0 29.15-1.387 29.15-1.387 5.897-.348 6.592 8.312.702 9.01 0 0-5.926.697-12.52 1.042L100.32 194.7l23.937-71.79-17.042-46.692c-5.89-.345-11.47-1.042-11.47-1.042-5.894-.346-5.203-9.358.691-9.01 0 0 18.064 1.388 28.811 1.388 11.44 0 29.151-1.388 29.151-1.388 5.9-.348 6.594 8.312.702 9.01 0 0-5.938.697-12.52 1.042l39.529 117.581 10.91-36.458c4.728-15.129 8.327-25.995 8.327-35.36zm-71.921 15.088l-32.818 95.363a109.376 109.376 0 0 0 30.899 4.456c12.737 0 24.952-2.202 36.323-6.2a9.605 9.605 0 0 1-.779-1.507l-33.625-92.112zm94.058-62.045c.47 3.484.737 7.224.737 11.247 0 11.1-2.073 23.577-8.317 39.178l-33.411 96.6c32.518-18.963 54.39-54.193 54.39-94.545.002-19.017-4.856-36.9-13.4-52.48zM127.505 0C57.2 0 0 57.196 0 127.5c0 70.313 57.2 127.507 127.505 127.507 70.302 0 127.51-57.194 127.51-127.507C255.014 57.196 197.808 0 127.506 0zm0 249.163c-67.08 0-121.659-54.578-121.659-121.663 0-67.08 54.576-121.654 121.659-121.654 67.078 0 121.652 54.574 121.652 121.654 0 67.085-54.574 121.663-121.652 121.663z' fill='#cccccc'/></svg>",
         classes: "bracket"
     },
     {
-        heading: "<h5>"+lorem.generateWords(1)+"</h5>",
+        heading: "<h5>Heading</h5>",
         content: "<p>"+lorem.generateWords(15)+"</p>",
         picture: "",
         classes: "bracket"
     },
     {
-        heading: "<h5>"+lorem.generateWords(7)+"</h5>",
+        heading: "<h5>Ultra Mega Super Long Heading</h5>",
         content: "<p>"+lorem.generateWords(30)+"</p>",
         picture: "",
         classes: "bracket"
     }
 ]}
 
-module.exports = brackets;
-},{"lorem-ipsum":8}],26:[function(require,module,exports){
 
-//Ship object constructor
-let generateBrackets = function (target, brackets) {
+let greybrackets = {
+    maincolor: "primary",
+    mainclass: "mainclass",
+    mainheading: "Heading",
+    content: lorem.generateWords(6),
+    subheading: "Heading",
+    reddot: false,
+    bracketsarray: [
+    {
+        heading: "<h5>Heading</h5>",
+        content: "<p>"+lorem.generateWords(10)+"</p>",
+        picture: drupal,
+        classes: "bracket"
+    },
+    {
+        heading: "<h5>Heading</h5>",
+        content: "<p>"+lorem.generateWords(15)+"</p>",
+        picture: "",
+        classes: "bracket"
+    },
+    {
+        heading: "<h5>Ultra Mega Super Long Heading</h5>",
+        content: "<p>"+lorem.generateWords(30)+"</p>",
+        picture: "",
+        classes: "bracket"
+    }
+]}
+
+module.exports = [bluebrackets, greybrackets];
+},{"./../img/drupal":25,"lorem-ipsum":8}],27:[function(require,module,exports){
+
+let generateBrackets = function (target, brackets, variantclass) {
 let bracketlements = "";
 let picture; 
-console.log(brackets)
 brackets.bracketsarray.forEach(function (element) {
     picture = element.picture? element.picture : "";
-    bracketlements = bracketlements + "<div class='col-sm-12 col-md-4 col-lg-4 col-xl-4'><div class='"+element.classes+"'>"+element.heading+element.content+picture+"</div></div>";  
+    bracketlements = bracketlements + "<div class='bcolumn col-sm-12 col-md-12 col-lg-4 col-xl-4'><div class='"+element.classes+"'>"+element.heading+element.content+picture+"</div></div>";  
 });
-console.log("bracketselements is", bracketlements);
 
 let mainheading = brackets.mainheading? "<h1>"+brackets.mainheading+"</h1>":"";
-let subheading = brackets.subheading? "<p class='subheading'>"+brackets.subheading+"</p>":"";
-//let bracketlements = "<div class='col-sm-12	col-md-6 col-lg-4 col-xl-4'>"+brackets[0].content+"</div>" + "<div class='col-sm-12 col-md-6 col-lg-4 col-xl-4'>TEST</div>" + "<div class='col-sm-12 col-md-6 col-lg-4	col-xl-4'>TEST</div>";
+let content = brackets.content? "<p class='bcontent'>"+brackets.content+"</p>":"";
+let reddot = brackets.reddot? "<div class='reddot'></div>":"";
+let subheading = brackets.subheading? "<h3>"+brackets.subheading+"</h3>":"";
 
-$(target).append("<div class='bracketsmodule'>"+mainheading+subheading+"<div class='bracketscontainer container'><div class='row'>"+bracketlements+"</div></div></div>");
-
+$(target).append("<div class='bracketsmodule "+variantclass+"'>"+mainheading+content+subheading+"<div class='bracketscontainer container'><div class='row'>"+bracketlements+"</div></div></div>").append(reddot);
 }
 
 module.exports = generateBrackets;
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 let generateBrackets = require('./generateBrackets.js');
 let brackets = require('./Brackets.js');
 
-generateBrackets('body', brackets);
+generateBrackets('body', brackets[0]);
+generateBrackets('body', brackets[1], "greyvariant");
 
 
-
-},{"./Brackets.js":25,"./generateBrackets.js":26}]},{},[27]);
+},{"./Brackets.js":26,"./generateBrackets.js":27}]},{},[28]);

@@ -77,7 +77,7 @@ gulp.task('buildcss', function() {
 
 
 
-// Static Server + watching scss/html files
+
 gulp.task('serve', ['sass'], function() {
 
     browserSync.init({
