@@ -6312,24 +6312,199 @@ a.text-dark:hover, a.text-dark:focus {
     color: inherit;
     border-color: #dee2e6; } }
 
-.bracketsmodule {
-  text-align: center;
-  padding-top: 40px;
-  background-color: blue; }
-  .bracketsmodule h1 {
-    color: white; }
-  .bracketsmodule .subheading {
-    color: white; }
+#demo {
+  line-height: 0 !important; }
 
-.bracketscontainer {
-  background-color: blue;
-  padding-bottom: 40px;
-  text-align: center;
-  vertical-align: bottom; }
+.playerboard {
+  height: 100% !important;
+  width: 100% !important;
+  background: #005C97;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #363795, #005C97);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #363795, #005C97);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  margin: 0 !important;
+  padding: 0; }
 
-.bracket {
-  text-align: center;
+.enemyboard {
+  height: 100% !important;
+  width: 100% !important;
+  background: #F00000;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #DC281E, #F00000);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #DC281E, #F00000);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  margin: 0 !important;
+  padding: 0; }
+
+.container {
+  height: 100%;
+  width: 100%; }
+
+.row {
+  height: 100%;
+  width: 100%; }
+
+html,
+body {
+  height: 100%; }
+
+body {
+  background: #485563;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #29323c, #485563);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #29323c, #485563);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: white; }
+
+.pfield {
+  box-sizing: border-box;
+  border: solid 1.5px black;
+  display: inline-block;
+  margin: 0px;
+  padding: 0px; }
+
+.shipshadow {
+  background-color: yellow; }
+
+.efield {
+  box-sizing: border-box;
+  border: solid 1.5px black;
+  display: inline-block;
+  margin: 0px;
+  padding: 0px;
+  cursor: pointer; }
+
+.efield:hover {
+  background-color: rgba(0, 0, 0, 0.7); }
+
+#playercol {
+  height: 80vmin;
+  width: 80vmin; }
+
+#enemycol {
+  height: 80vmin;
+  width: 80vmin; }
+
+#klik {
+  height: 30px; }
+
+.placedship {
+  background-color: green !important; }
+
+.blocked {
+  background-color: grey !important; }
+
+.carousel-indicators {
+  visibility: hidden; }
+
+.sunken {
+  background-color: black;
+  color: white;
+  cursor: default; }
+
+.sunken:hover {
+  background-color: black;
+  color: white;
+  cursor: default; }
+
+.missed {
   background-color: white;
-  overflow-wrap: break-word;
+  cursor: default; }
+
+.missed:hover {
+  background-color: white;
+  cursor: default; }
+
+@keyframes blinking {
+  0% {
+    background-color: white; }
+  25% {
+    background-color: red; }
+  50% {
+    background-color: white; }
+  75% {
+    background-color: red; }
+  100% {
+    background-color: white; } }
+
+.enemypicked {
+  animation: blinking 1.5s;
+  background-color: white; }
+
+.enemypicked-done {
+  background-color: white; }
+
+#text-container {
+  padding: 1em;
+  display: inline-block;
+  line-height: normal;
+  text-align: center; }
+
+.title {
+  padding: 10px;
+  display: inline-block;
+  line-height: normal;
+  text-align: center;
+  font-weight: 700;
+  font-size: 2em; }
+
+#fieldamount {
+  max-width: 80px;
+  margin: auto; }
+
+#startpopup {
+  border: 3px solid black;
+  color: black;
+  top: 30vh;
+  position: absolute;
+  z-index: 10000;
+  background-color: white;
+  padding: 30px; }
+
+.endgame {
+  border: 3px solid black;
+  top: 30vh;
+  color: black !important;
+  position: absolute;
+  z-index: 10000;
+  background-color: white;
   padding: 30px;
-  min-height: 100%; }
+  margin-left: 50%;
+  transform: translateX(-50%); }
+
+#turnpopup {
+  top: 30vh;
+  position: absolute;
+  z-index: 10000;
+  background-color: white;
+  padding: 30px; }
+
+.startgambtn {
+  margin-bottom: 10px;
+  width: 200px; }
+
+.form-fleet {
+  display: inline-block !important;
+  width: 60px !important; }
+
+input {
+  margin-bottom: 10px; }
+
+.fleerowcontainer {
+  text-align: right !important;
+  padding-right: 25%; }
+  .fleerowcontainer input {
+    margin-left: 10px; }
+
+#fieldamount {
+  margin-bottom: 10px; }
+
+.repositionbtn-two {
+  max-width: 250px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 20px; }
