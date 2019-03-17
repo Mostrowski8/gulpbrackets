@@ -1,2085 +1,1166 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-//global objects
-var settings = {
-    amount: "",
-    phases: ""
-}
-//Ship object constructor
-function Ship() {
-    this.status = "";
-    this.fields = [];
-    this.hits = 0;
-    this.status = "placed"
-}
-//game stats
-var stats = {
-    playershipspoints: [],
-    enemyshipspoints: [],
-    playerwin: false
-}
-//letter A String.fromCharCode(65)
-var playerships = {
-
-    single_deckers: [],
-
-    two_deckers: [],
-
-    three_deckers: [],
-
-    four_deckers: [],
-
-    five_deckers: []
-
-}
-var enemyships = {
-
-    single_deckers: [],
-
-    two_deckers: [],
-
-    three_deckers: [],
-
-    four_deckers: [],
-
-    five_deckers: []
-
-}
-
-
-
-
-//board object
-var playerboard = {
-    rows: [],
-    columns: [],
-    fields: [],
-    blocked: []
-};
-var enemyboard = {
-    rows: [],
-    columns: [],
-    fields: [],
-    blocked: []
-};
-//global variables
-var amount;
-var gamestarted = false;
-
-var phases = [
-    {
-        phasename: "fivedeckerphase",
-        done: false,
-        shipsize: 5,
-        //1
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "fourdeckerphase",
-        done: false,
-        shipsize: 4,
-        //2
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "threedeckerphase",
-        done: false,
-        shipsize: 3,
-        //3
-        phaseshipsleft: 2
-    },
-    {
-        phasename: "twodeckerphase",
-        done: false,
-        shipsize: 2,
-        //5?
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "onedeckerphase",
-        done: false,
-        shipsize: 1,
-        //0
-        phaseshipsleft: 0
-    }
-];
-
-var enemyphases = [
-    {
-        phasename: "fivedeckerphase",
-        done: false,
-        shipsize: 5,
-        //1
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "fourdeckerphase",
-        done: false,
-        shipsize: 4,
-        //2
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "threedeckerphase",
-        done: false,
-        shipsize: 3,
-        //3
-        phaseshipsleft: 2
-    },
-    {
-        phasename: "twodeckerphase",
-        done: false,
-        shipsize: 2,
-        //5?
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "onedeckerphase",
-        done: false,
-        shipsize: 1,
-        //0
-        phaseshipsleft: 0
-    }
-];
-
-var resetphases = [
-    {
-        phasename: "fivedeckerphase",
-        done: false,
-        shipsize: 5,
-        //1
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "fourdeckerphase",
-        done: false,
-        shipsize: 4,
-        //2
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "threedeckerphase",
-        done: false,
-        shipsize: 3,
-        //3
-        phaseshipsleft: 2
-    },
-    {
-        phasename: "twodeckerphase",
-        done: false,
-        shipsize: 2,
-        //5?
-        phaseshipsleft: 1
-    },
-    {
-        phasename: "onedeckerphase",
-        done: false,
-        shipsize: 1,
-        //0
-        phaseshipsleft: 0
-    }
-];
-//(function () {
-//    phases.forEach(function (phase, index) {
-//
-//        enemyphases.push(phases[index]);
-//
-//    });
-//})();
-
-var currentenemyphase = 0;
-var enemyshipsize;
-var enemyallowed = true;
-var enemyshipsplaceallowed = true;
-
-//MODULE EXPORTS
-module.exports = {
-    settings: settings,
-    Ship: function () {
-        this.status = "";
-        this.fields = [];
-    },
-    stats: stats,
-    playerships: playerships,
-    enemyships: enemyships,
-    playerboard: playerboard,
-    enemyboard: enemyboard,
-    amount: amount,
-    gamestarted: gamestarted,
-    phases: phases,
-    enemyphases: enemyphases,
-    currentenemyphase: currentenemyphase,
-    enemyshipsize: enemyshipsize,
-    enemyallowed: enemyallowed,
-    enemyshipsplaceallowed: enemyshipsplaceallowed,
-    resetphases: resetphases
-}
 
 },{}],2:[function(require,module,exports){
-//globals module import
-var globals = require('./globals.js');
-//var enemyshipstorage = require('./enemyshipstorage.js');
-var settings = globals.settings;
-var Ship = globals.Ship;
-var stats = globals.stats;
-var playerships = globals.playerships;
-var enemyships = globals.enemyships;
-var playerboard = globals.playerboard;
-var enemyboard = globals.enemyboard;
-var amount = globals.amount;
-var gamestarted = globals.gamestarted;
-var phases = globals.phases;
-var enemyphases = globals.enemyphases;
-var enemyallowed = globals.enemyallowed;
-var enemyshipsplaceallowed = globals.enemyshipsplaceallowed;
-var enemyshipsize = globals.enemyshipsize;
-var currentenemyphase = globals.currentenemyphase;
-var resetphases = globals.resetphases;
-//globals module import
-var turns = 0;
-var shipstotal = 0;
-var hits = 0;
-var missedshots = 0;
+"use strict";
 
-
-
-//COS W ENEMYSHIPPLACING ROZWALA KIEDY ZMIENIASZ FIVDECKER
-
-
-
-
-
-
-enemyboard.getenemyfieldname = function (asknumber) {
-    enemyboard.fields.forEach(function (field, index) {
-        if (asknumber == index) {
-            return field.fieldname;
-        }
-    })
-}
-
-//jquery shaker animation
-jQuery.fn.shake = function () {
-    this.each(function (i) {
-        $(this).css({
-            "position": "relative",
-
-        });
-        for (var x = 1; x <= 3; x++) {
-            $(this).animate({
-                left: 20
-            }, 40).animate({
-                right: 40
-            }, 50).animate({
-                left: 0
-            }, 40);
-        }
-    });
-    return this;
-}
-
-//starting events
-//popups
-$('#demo').hide();
-$('.fieldsform').hide();
-$('#capacityalert').hide();
-var customshow = 0;
-$('#customizebtn').on('click', function () {
-    switch (customshow) {
-        case 0:
-            $('.fieldsform').show();
-            $('#customizebtn').html('Hide custom settings');
-
-            customshow = 1;
-
-            break;
-        case 1:
-            $('.fieldsform').hide();
-            $('#customizebtn').html('Show custom settings');
-            customshow = 0;
-
-            break;
-    }
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-var ref = $('#demo');
-var popup = $('#startpopup');
-var turnpopup = $('#turnpopup');
+exports.COPY = void 0;
+var COPY = {
+  DARWIN: "pbcopy",
+  LINUX: "xclip -selection clipboar",
+  WIN32: "clip"
+};
+exports.COPY = COPY;
 
+},{}],3:[function(require,module,exports){
+"use strict";
 
-popup.hide();
-turnpopup.hide();
-
-
-$('#text-container').after('<button type="button" class="btn btn-primary btn-sx repositionbtn repositionbtn-two" style="width: 100%">REPOSITION SHIPS</button><br>');
-$('.repositionbtn-two').hide();
-
-
-$('#fieldamount').on('input', function () {
-    $('#shaker').html('fields:&nbsp;' + this.value);
-    shiplimiter();
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-
-var tempcheck = true;
-
-function shiplimiter() {
-    var customshipnumber = $('#fieldamount').val() * $('#fieldamount').val();
-    console.log(customshipnumber);
-    var temp = 0;
-    phases.forEach(function (phase) {
-        temp += (phase.shipsize * 3 + 3 * 2) * (phase.phaseshipsleft);
-        console.log(phase.phasename);
-        console.log(temp);
-    });
-
-    if (customshipnumber < temp) {
-        console.log('limit the ships');
-        var shipforms = document.getElementsByClassName("form-fleet");
-        for (i = 0; i < shipforms.length; i++) {
-            shipforms[i].max = shipforms[i].value;
-            shipforms[i].style.color = "red";
-            $('#capacityalert').show();
-            //creatboard off
-            $('#createbttn').off('click', boardcreationcheck);
-            $('#createbttn').removeClass('btn-primary');
-            tempcheck = false;
-        }
-    } else if (tempcheck === false) {
-        $('#createbttn').one('click', boardcreationcheck);
-        $('#createbttn').addClass('btn-primary');
-        console.log("tempcheck back to true")
-        tempcheck = true;
-        var shipforms = document.getElementsByClassName("form-fleet");
-        for (i = 0; i < shipforms.length; i++) {
-            shipforms[i].max = 20;
-            shipforms[i].style.color = "black";
-            $('#capacityalert').hide();
-        }
-    }
-}
-
-function updatephases(e) {
-    var tempid = e.target.id;
-    var $tempvalue = e.target.value;
-    console.log("tempid" + tempid + "tempvalue" + $tempvalue);
-    switch (tempid) {
-        case "Fivedeckers":
-            phases[0].phaseshipsleft = parseInt($tempvalue, 10);
-            enemyphases[0].phaseshipsleft = parseInt($tempvalue, 10);
-            resetphases[0].phaseshipsleft = parseInt($tempvalue, 10);
-            if (phases[0].phaseshipsleft === 0) {
-                phases[0].done = true;
-            } else {
-                phases[0].done = false;
-            }
-            console.log("onphasechange", phases);
-
-            break;
-        case "Fourdeckers":
-            phases[1].phaseshipsleft = parseInt($tempvalue, 10);
-            enemyphases[1].phaseshipsleft = parseInt($tempvalue, 10);
-            resetphases[1].phaseshipsleft = parseInt($tempvalue, 10);
-            if (phases[1].phaseshipsleft === 0) {
-                phases[1].done = true;
-            } else {
-                phases[1].done = false;
-            }
-            console.log("onphasechange", phases);
-            break;
-        case "Threedeckers":
-            phases[2].phaseshipsleft = parseInt($tempvalue, 10);
-            enemyphases[2].phaseshipsleft = parseInt($tempvalue, 10);
-            resetphases[3].phaseshipsleft = parseInt($tempvalue, 10);
-            if (phases[2].phaseshipsleft === 0) {
-                phases[2].done = true;
-            } else {
-                phases[2].done = false;
-            }
-            console.log("onphasechange", phases);
-            break;
-        case "Twodeckers":
-            phases[3].phaseshipsleft = parseInt($tempvalue, 10);
-            enemyphases[3].phaseshipsleft = parseInt($tempvalue, 10);
-            resetphases[3].phaseshipsleft = parseInt($tempvalue, 10);
-            if (phases[3].phaseshipsleft === 0) {
-                phases[3].done = true;
-            } else {
-                phases[3].done = false;
-            }
-            console.log("onphasechange", phases);
-            break;
-        case "Onedeckers":
-            phases[4].phaseshipsleft = parseInt($tempvalue, 10);
-            enemyphases[4].phaseshipsleft = parseInt($tempvalue, 10);
-            resetphases[4].phaseshipsleft = parseInt($tempvalue, 10);
-            if (phases[4].phaseshipsleft === 0) {
-                phases[4].done = true;
-            } else {
-                phases[4].done = false;
-            }
-            console.log("onphasechange", phases);
-    }
-}
-$('.form-fleet').on('input', updatephases);
-$('.form-fleet').on('input', shiplimiter);
-
-
-
-//placing ships
-var shipsize;
-var dirvertical = true;
-var currentphase = 0;
-var placeshipallowed;
-
-
-
-function reset() {
-    console.log("here reset")
-    console.log("reset", resetphases);
-    shipamount = 0;
-    //Object.assign(phases, resetphases);
-    phases = JSON.parse(JSON.stringify(resetphases));
-    currentphase = 0;
-
-    playerboard.blocked = [];
-    playerboard.fields.blocked = [];
-    for (i = 0; i < playerboard.fields.length; i++) {
-        playerboard.fields[i].blocked = [];
-    }
-    phases.forEach(function (phase, index) {
-        shipamount += phase.phaseshipsleft;
-    });
-    //still some blocked class or object
-    //check shiplacing func
-
-    playerships = {
-
-        single_deckers: [],
-
-        two_deckers: [],
-
-        three_deckers: [],
-
-        four_deckers: [],
-
-        five_deckers: []
-
-    }
-
-
-}
-
-
-
-
-function phasecheck() {
-    console.log("phasechek fired", phases)
-    if (phases[currentphase] && phases[currentphase].phaseshipsleft === 0) {
-        phases[currentphase].done = true;
-        currentphase++
-        //console.log(currentphase);
-        //console.log(phases[currentphase]);
-        if (phases[currentphase] && phases[currentphase].phaseshipsleft === 0) {
-            phasecheck();
-        }
-    }
-    shipplacing();
-};
-
-
-function placeship(event) {
-    console.log("placeship fired on ", 'target ', event.target, 'method', event.method, event.offset);
-    if (placeshipallowed == true) {
-        var temp = this.id;
-        console.log("placeship fired", phases);
-        phases[currentphase].phaseshipsleft--;
-        console.log("placeship removing from phases", phases[currentphase].phasename, phases[currentphase].phaseshipsleft);
-        console.log("placeship phases", phases);
-        var temptwo = removeshipshadow.bind(event.target);
-        temptwo();
-
-        //create temprorary ship object
-        var tempship = new Ship();
-        tempship.shipsize = shipsize;
-        tempship.status = "placed";
-        tempship.hits = 0;
-        tempship.adjacents = [];
-
-        for (i = 0; i < playerboard.fields.length; i++) {
-            if ("p" + playerboard.fields[i].fieldname == temp) {
-                //console.log(i);
-                if (dirvertical == true) {
-                    for (var j = 0; j < shipsize; j++) {
-                        tempship.fields.push("#p" + ((playerboard.fields[i + amount * j].fieldname)));
-                        $("#p" + ((playerboard.fields[i + amount * j].fieldname))).addClass("placedship");
-                        var linennumber = i + amount * j;
-                        playerboard.fields[linennumber].empty = false;
-                        playerboard.fields[linennumber].clicked = true;
-                        playerboard.fields[linennumber].occupied = true;
-                        //adjacents and blocked
-                        var leftrestrictednumbers = [0];
-                        var rightrestrictednumbers = [amount - 1];
-
-                        for (q = 1; q <= amount; q++) {
-                            rightrestrictednumbers.push((amount - 1) + (amount * q));
-                            leftrestrictednumbers.push(amount * q);
-                        }
-                        //console.log(leftrestrictednumbers);
-                        //console.log(rightrestrictednumbers);
-                        var nonrestricted = true;
-                        for (r = 0; r < amount; r++) {
-                            if (i == leftrestrictednumbers[r]) {
-                                if (i == leftrestrictednumbers[leftrestrictednumbers.length - 1 - shipsize]) {
-                                    console.log("left exception");
-                                    tempship.adjacents.push(linennumber, linennumber + 1, (linennumber - amount) + 1);
-                                    playerboard.blocked.push(linennumber, linennumber + 1, (linennumber - amount) + 1),
-                                        nonrestricted = false;
-                                } else {
-                                    console.log("left");
-                                    tempship.adjacents.push(linennumber, linennumber + 1, linennumber + amount, (linennumber - amount) + 1, (linennumber + amount) + 1);
-                                    playerboard.blocked.push(linennumber, linennumber + 1, linennumber + amount, (linennumber - amount) + 1, (linennumber + amount) + 1);
-                                    nonrestricted = false;
-                                }
-
-                            } else if (i == rightrestrictednumbers[r]) {
-                                console.log("right");
-                                tempship.adjacents.push(linennumber, linennumber - 1, linennumber + amount, linennumber - amount, (linennumber - amount) - 1, (linennumber + amount) - 1);
-                                playerboard.blocked.push(linennumber, linennumber - 1, linennumber + amount, linennumber - amount, (linennumber - amount) - 1, (linennumber + amount) - 1);
-                                nonrestricted = false;
-                            }
-                        }
-                        if (nonrestricted == true) {
-                            //console.log("else why");
-                            tempship.adjacents.push(linennumber, linennumber + 1, linennumber - 1, linennumber + amount, linennumber - amount, (linennumber - amount) + 1, (linennumber - amount) - 1, (linennumber + amount) + 1, (linennumber + amount) - 1);
-                            playerboard.blocked.push(linennumber, linennumber + 1, linennumber - 1, linennumber + amount, linennumber - amount, (linennumber - amount) + 1, (linennumber - amount) - 1, (linennumber + amount) + 1, (linennumber + amount) - 1);
-                        }
-
-
-
-                        for (x = 0; x < playerboard.blocked.length; x++) {
-                            var tempnuba = playerboard.blocked[x];
-                            //console.log(tempnuba);
-
-                            if (tempnuba >= 0 && tempnuba <= playerboard.fields.length) {
-                                //console.log('tempnuba '+tempnuba);
-                                playerboard.fields[tempnuba].blocked = true;
-                            }
-                        }
-                    }
-                    //direction horizontal
-                } else {
-                    for (var j = 0; j < shipsize; j++) {
-                        tempship.fields.push("#p" + ((playerboard.fields[i + j].fieldname)));
-                        $("#p" + ((playerboard.fields[i + j].fieldname))).addClass("placedship");
-                        var linennumber = i + j;
-                        playerboard.fields[linennumber].empty = false;
-                        playerboard.fields[linennumber].clicked = true;
-                        playerboard.fields[linennumber].occupied = true;
-                        //adjacents and blocked
-                        //adjacents and blocked
-                        var leftrestrictednumbers = [0];
-                        var rightrestrictednumbers = [amount - shipsize];
-
-                        for (q = 1; q < amount; q++) {
-                            rightrestrictednumbers.push(((amount - 1) + (amount * q)) - (shipsize - 1));
-                            leftrestrictednumbers.push(amount * q);
-                        }
-                        //console.log(leftrestrictednumbers);
-                        //console.log(rightrestrictednumbers);
-                        var nonrestricted = true;
-                        for (r = 0; r < amount; r++) {
-                            if (i == leftrestrictednumbers[r]) {
-                                if (i == leftrestrictednumbers[leftrestrictednumbers.length - 1]) {
-                                    //console.log("workongsddfgsdg");
-                                    nonrestricted = false;
-                                    tempship.adjacents.push(linennumber, linennumber + 1, (linennumber - amount) + 1);
-                                    playerboard.blocked.push(linennumber, linennumber + 1, (linennumber - amount), (linennumber - amount) + 1);
-                                } else {
-                                    //console.log("left");
-                                    tempship.adjacents.push(linennumber, linennumber + 1, linennumber + amount, (linennumber - amount) + 1, (linennumber + amount) + 1);
-                                    playerboard.blocked.push(linennumber, linennumber + 1, linennumber + amount, (linennumber - amount) + 1, (linennumber + amount) + 1);
-                                    nonrestricted = false;
-                                }
-
-                            } else if (i == rightrestrictednumbers[r]) {
-                                //console.log("right");
-                                tempship.adjacents.push(linennumber, linennumber - 1, linennumber + amount, linennumber - amount, (linennumber - amount) - 1, (linennumber + amount) - 1);
-                                playerboard.blocked.push(linennumber, linennumber - 1, linennumber + amount, linennumber - amount, (linennumber - amount) - 1, (linennumber + amount) - 1);
-                                nonrestricted = false;
-                            }
-                        }
-                        if (nonrestricted == true) {
-                            //console.log("else why");
-                            tempship.adjacents.push(linennumber, linennumber + 1, linennumber - 1, linennumber + amount, linennumber - amount, (linennumber - amount) + 1, (linennumber - amount) - 1, (linennumber + amount) + 1, (linennumber + amount) - 1);
-                            playerboard.blocked.push(linennumber, linennumber + 1, linennumber - 1, linennumber + amount, linennumber - amount, (linennumber - amount) + 1, (linennumber - amount) - 1, (linennumber + amount) + 1, (linennumber + amount) - 1);
-                        }
-
-
-
-
-
-                        for (x = 0; x < playerboard.blocked.length; x++) {
-                            var tempnuba = playerboard.blocked[x];
-                            //console.log(tempnuba);
-                            if (tempnuba >= 0 && tempnuba <= playerboard.fields.length - 1) {
-                                //console.log('tempnumba2 '+tempnuba);
-                                playerboard.fields[tempnuba].blocked = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        //console.log('shipsleft' + phases[currentphase].phaseshipsleft + 'phasename' + phases[currentphase].phasename + 'done?' + phases[currentphase].done);
-
-        //place shipobject in playerships
-        if (shipsize == 5) {
-            playerships.five_deckers.push(tempship);
-        }
-        if (shipsize == 4) {
-            playerships.four_deckers.push(tempship);
-        } else if (shipsize == 3) {
-            playerships.three_deckers.push(tempship);
-        } else if (shipsize == 2) {
-            playerships.two_deckers.push(tempship);
-        } else if (shipsize == 1) {
-            playerships.single_deckers.push(tempship);
-        }
-
-        shipamount--
-        $('#text-container').html('Place your ships by clicking on fields, right click to change the direction of the ship<br>Remaining ships: ');
-        $('#text-container').append(shipamount);
-
-
-        phasecheck();
-
-    }
-
-}
-var allowed = true;
-
-function shipshadow() {
-    //console.log("shipshadoworks");
-
-    var temp = this.id;
-    var lastletters = [];
-    for (k = shipsize; k > 0; k--) {
-        lastletters.push((playerboard.fields[amount * (amount - k)].fieldname).substring(0, 1));
-    }
-
-    console.log("this id for shipshadow is " + temp + " " + lastletters);
-    for (i = 0; i < playerboard.fields.length; i++) {
-
-        if ("p" + playerboard.fields[i].fieldname == temp) {
-            if (dirvertical == true) {
-
-                for (m = 0; m < shipsize; m++) {
-                    if ((i + amount * m) < playerboard.fields.length && playerboard.fields[i + amount * m].blocked == true) {
-                        allowed = false;
-                        placeshipallowed = false;
-                        $("#p" + ((playerboard.fields[i + amount * m].fieldname))).addClass("blocked");
-
-                    }
-                }
-                //2nd check
-                for (j = 0; j < shipsize; j++) {
-
-                    if (temp.substring(1, 2) == lastletters[1] || temp.substring(1, 2) == lastletters[2] || temp.substring(1, 2) == lastletters[3] ||
-                        temp.substring(1, 2) == lastletters[4] || allowed == false) {
-                        if ((i + amount * j) < playerboard.fields.length) {
-                            allowed = false;
-                            placeshipallowed = false;
-                            $("#p" + ((playerboard.fields[i + amount * j].fieldname))).addClass("blocked");
-                        }
-
-                        //console.log("not working");
-                        //blocked fields detector           
-                    } else {
-
-                        //thirdcheck
-                        //IMPLEMENT UNDEFINED EXCEPT IN ENEMYCHECK NAOOOOOO!!!!!!
-
-                        if (playerboard.fields[i + amount * j]) {
-                            $("#p" + ((playerboard.fields[i + amount * j].fieldname))).addClass("shipshadow");
-                            //console.log(i + " " + j + " " + ((playerboard.fields[i + amount * j].fieldname)));
-                            placeshipallowed = true;
-                        } else {
-                            placeshipallowed = false;
-                        }
-
-                    }
-                }
-
-                //if dirvertical false
-            } else {
-                var allowed = true;
-                for (m = 0; m < shipsize; m++) {
-                    if ((i + m) < playerboard.fields.length && playerboard.fields[i + m].blocked == true) {
-                        allowed = false;
-                        placeshipallowed = false;
-                    }
-                }
-                for (j = 0; j < shipsize; j++) {
-
-                    if ((amount - shipsize) < parseInt(temp.substr(2, 10)) - 1 || allowed == false) {
-                        if (playerboard.fields[i + j] && temp.substring(1, 2) == playerboard.fields[i + j].fieldname.substring(0, 1)) {
-                            $("#p" + ((playerboard.fields[i + j].fieldname))).addClass("blocked");
-                        }
-                        placeshipallowed = false;
-                    } else {
-                        $("#p" + ((playerboard.fields[i + j].fieldname))).addClass("shipshadow");
-                        placeshipallowed = true;
-                        //console.log(i + " " + j + " " + ((playerboard.fields[i + j].fieldname)));
-
-                    }
-                }
-            }
-        }
-    }
-}
-
-function removeshipshadow() {
-    //console.log("shipshadow off");
-    var temp = this.id;
-    //console.log("this id for shipshadow is " + temp);
-    for (i = 0; i < playerboard.fields.length; i++) {
-        if ("p" + playerboard.fields[i].fieldname == temp) {
-            if (dirvertical == true) {
-                for (j = 0; j < shipsize; j++) {
-                    if (playerboard.fields[i + amount * j]) {
-                        $("#p" + ((playerboard.fields[i + amount * j].fieldname))).removeClass("shipshadow");
-                        $("#p" + ((playerboard.fields[i + amount * j].fieldname))).removeClass("blocked");
-                    }
-                }
-            } else {
-                for (j = 0; j < shipsize; j++) {
-                    if (playerboard.fields[i + j]) {
-                        $("#p" + ((playerboard.fields[i + j].fieldname))).removeClass("shipshadow");
-                        $("#p" + ((playerboard.fields[i + j].fieldname))).removeClass("blocked");
-                    }
-                }
-            }
-        }
-    }
-};
-
-function onedeckerphase() {
-    //setting up ship size
-
-    shipsize = 1;
-    console.log(phases);
-    if (phases[currentphase].phaseshipsleft == 0) {
-        phasecheck()
-    }
-};
-
-function twodeckerphase() {
-    //setting up ship size
-
-    shipsize = 2;
-    console.log(phases);
-    if (phases[currentphase].phaseshipsleft == 0) {
-        phasecheck()
-    }
-};
-
-function threedeckerphase() {
-    //setting up ship size
-
-    shipsize = 3;
-    console.log(phases);
-    if (phases[currentphase].phaseshipsleft == 0) {
-        phasecheck()
-    }
-};
-
-//fourdeckerphase
-function fourdeckerphase() {
-    //setting up ship size
-
-    shipsize = 4;
-    console.log(phases);
-    if (phases[currentphase].phaseshipsleft == 0) {
-        phasecheck()
-    }
-};
-
-function fivedeckerphase() {
-    //setting up ship size
-    shipsize = 5;
-    console.log(phases);
-    if (phases[currentphase].phaseshipsleft == 0) {
-        phasecheck()
-    }
-};
-
-$("#startgamebtn").on("click", function () {
-    console.log(playerships);
-    $(".pfield").off("click", placeship);
-    popup.hide();
-    turn();
-    $('#text-container').html('Pick enemy field');
-    _.each(playerships, function (shipset) {
-        _.each(shipset, function (ships) {
-            shipstotal++
-        });
-    });
+exports.CANNOT_DETERMINE_PLATFORM = void 0;
+var CANNOT_DETERMINE_PLATFORM = "Could not determine host operating system.";
+exports.CANNOT_DETERMINE_PLATFORM = CANNOT_DETERMINE_PLATFORM;
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
+exports.FORMATS = exports.FORMAT_PLAIN = exports.FORMAT_HTML = void 0;
+var FORMAT_HTML = "html";
+exports.FORMAT_HTML = FORMAT_HTML;
+var FORMAT_PLAIN = "plain";
+exports.FORMAT_PLAIN = FORMAT_PLAIN;
+var FORMATS = [FORMAT_HTML, FORMAT_PLAIN];
+exports.FORMATS = FORMATS;
 
-$(".repositionbtn").on("click", function () {
-    popup.hide();
-    var playerdivs = document.getElementsByClassName('pfield');
-    for (i = 0; i < playerdivs.length; i++) {
-        playerdivs[i].classList.remove('placedship');
-    }
-    reset();
-    $('#text-container').html('Place your ships by clicking on fields then click on the board to start<br>Remaining ships: ');
-    $('#text-container').append(shipamount);
-    $(".pfield").off("click", placeship);
-    $(".pfield").one("click", placeship);
-    $(".pfield").on("mouseover", shipshadow);
-    $(".pfield").on("mouseleave", removeshipshadow);
-    playerboard.fields.forEach(function (field, index) {
-        field.empty = true;
-        field.clicked = false;
-        field.occupied = false;
-    })
-    playerboard.fields.forEach(function (field, index) {
+},{}],5:[function(require,module,exports){
+"use strict";
 
-        console.log("occupied ", field.occupied);
-    })
-
-    console.log("playershipsreset ", playerships);
-    console.log("playerboard.blokd ", playerboard.blocked);
-    shipplacing();
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-
-
-
-//STARTGAME FUNCTION
-function startgame() {
-    $(".pfield").off("mouseover", shipshadow);
-    $(".pfield").off("mouseleave", removeshipshadow);
-    //$(".pfield").off("click", placeship);
-    $('.repositionbtn-two').hide();
-    popup.show();
-    console.log("playershipsreset ", playerships);
-    console.log("playerboard.blokd ", playerboard.blocked);
-    //create popper prompt to restart or start game     
-}
-
-
-
-function shipplacing() {
-
-    if (phases[0].done == true) {
-        if (phases[1].done == true) {
-            if (phases[2].done == true) {
-                if (phases[3].done == true) {
-                    if (phases[4].done == true) {
-                        startgame();
-                    } else {
-                        onedeckerphase();
-                    }
-                } else {
-                    twodeckerphase();
-                }
-            } else {
-                threedeckerphase();
-            }
-        } else {
-            fourdeckerphase();
-        }
-    } else {
-        fivedeckerphase();
-    }
+exports.LINE_ENDINGS = void 0;
+var LINE_ENDINGS = {
+  POSIX: "\n",
+  WIN32: "\r\n"
 };
+exports.LINE_ENDINGS = LINE_ENDINGS;
 
+},{}],6:[function(require,module,exports){
+"use strict";
 
-
-//function bound to playerfieldclickevent
-function playerclick() {
-    $(".pfield").off('click', playerclick);
-    $('#text-container').html('Pick enemy field');
-    turn();
-};
-
-
-
-
-
-
-function displaywingame() {
-    $(".pfield").off('click', playerclick);
-    $(".efield").off('click', enemyclick);
-    $('body').append("<div class='endgame'><h1>YOU WIN</h1><br>turns: " + turns + "<br>ships total: " + shipstotal + "<br>hits: " + hits + "<br>missed shots: " + missedshots + "<br><br><button type='button' class='btn btn-primary btn-sx restarter'>Menu</button> </div>");
-    $('.restarter').click(function () {
-        location.reload();
-    });
-}
-
-
-
-var turnsunken = false;
-
-function enemyclicktwo(temp) {
-    for (i = 0; i < enemyboard.fields.length; i++) {
-        if ("e" + enemyboard.fields[i].fieldname == temp) {
-            if (!enemyboard.fields[i].sunken && !enemyboard.fields[i].missed) {
-                if (!enemyboard.fields[i].empty) {
-                    $('#' + temp).removeClass("placedship");
-                    $('#' + temp).addClass("sunken");
-                    enemyboard.fields[i].sunken = true;
-                    //console.log("BULLSEYE");
-                    $('#text-container').html('HIT!');
-                    hits++
-                    $('#text-container').shake();
-                    console.log(enemyships);
-                    turnsunken = false
-                    _.each(enemyships, function (shipset) {
-                        _.each(shipset, function (ship) {
-                            _.each(ship.fields, function (field) {
-                                if (field == '#' + temp) {
-                                    ship.hits++
-                                    console.log(ship.fields, ship.hits);
-                                }
-                                if (ship.hits == ship.shipsize && ship.status != "sunken") {
-                                    ship.status = "sunken";
-                                    turnsunken = true;
-                                    console.log(ship.fields, ship.status);
-                                }
-                            })
-                        })
-                    });
-
-
-                    _.each(enemyships, function (shipset) {
-                        _.each(shipset, function (ship) {
-                            if (ship.status == "placed") {
-                                shipset.clear = false;
-                                return
-                            } else {
-                                shipset.clear = true;
-                            }
-                        })
-                    })
-
-                    var wingame = _.find(enemyships, function (shipset) {
-                        return shipset.clear == false;
-
-                    })
-
-                    if (wingame == undefined) {
-                        displaywingame();
-                    }
-
-                    setTimeout(function () {
-                        if (turnsunken === false) {
-                            $('#text-container').html('Pick another field');
-                        } else {
-                            $('#text-container').html('Ship sunken! Pick another field');
-                        }
-                    }, 1500);
-                } else {
-                    enemyboard.fields[i].missed = true;
-                    $('#' + temp).addClass("missed");
-                    //console.log("MISS");
-                    $('#text-container').html('MISS!');
-                    missedshots++
-                    setTimeout(function () {
-                        $('#text-container').html('Enemy turn...');
-                        turnboarad();
-                    }, 1200);
-                    refreshed = false;
-                    setTimeout(function () {
-
-                        enemypick();
-                    }, 3000);
-                    //                    setTimeout(function () {
-                    //                        $(".pfield").on('click', playerclick);
-                    //                    }, 5000);
-                }
-            } else {
-
-                //console.log("please pick an empty field");
-            }
-        }
-    }
-}
-
-function turnboarad() {
-    if (kliktemp == 1) {
-        $("#demo").carousel('next');
-        kliktemp = 0;
-    } else {
-        $("#demo").carousel('prev');
-        kliktemp = 1;
-    }
-};
-
-//function bound to clickenemyfieldevent
-function enemyclick(event) {
-    if (refreshed == true) {
-
-
-
-        var temp = this.id;
-        //console.log(temp);
-
-        enemyclicktwo(temp);
-
-    } else {
-
-        enemyclicktwo(temp);
-
-    }
-};
-
-
-//ENEMY SHIPS PLACING START
-
-//gdzies jest zbyt duza rekurencja
-//maximum call stack limit
-//when i run this plaer placement event listener is not even on
-
-//rekurenacja jest odpalana rowniez po wejsciuw sama siebie co oznacza zalew
-
-//trzecia faza dostaje ststki na -1
-
-//RETURN PO KAZDEJ REKURENCJIIIIIIIIII!!!!!!
-
-function enemyphasecheck() {
-    console.log("enemyphasechek launched for" + enemyphases[currentenemyphase].phasename + "and ships left is" + enemyphases[currentenemyphase].phaseshipsleft)
-    if (enemyphases[currentenemyphase].phaseshipsleft == 0) {
-        enemyphases[currentenemyphase].done = true;
-        console.log("enemyphasechek phase done?" + enemyphases[currentenemyphase] + enemyphases[currentenemyphase].done)
-        if (currentenemyphase < enemyphases.length - 1) {
-            currentenemyphase++
-            placeenemyships(amount);
-            console.log(currentenemyphase)
-        } else {
-            return;
-        }
-
-
-        //console.log(currentenemyphase);
-        //console.log(enemyphases[currentenemyphase].phasename);
-        //one more loop if next phase has 0
-        if (enemyphases[currentenemyphase].phaseshipsleft == 0) {
-            console.log("enemyphasechek this was 0")
-            enemyphasecheck();
-
-        }
-    } else {
-        console.log("this pahse is not done" + currentenemyphase + " ships left" + enemyphases[currentenemyphase].phaseshipsleft)
-        placeenemyships(amount);
-
-    }
-}
-
-
-function placeshiphere(temp) {
-
-    console.log("placeshiphere launched with temp" + temp)
-    //left for dev
-    if (enemyshipsplaceallowed == true) {
-        //var temp = temp;
-        console.log("enemyshipsplaceallowed in placeshiphere")
-        enemyphases[currentenemyphase].phaseshipsleft--;
-        var tempship = new Ship();
-        tempship.shipsize = enemyshipsize;
-        tempship.status = "placed";
-        tempship.hits = 0;
-        tempship.adjacents = [];
-        for (i = 0; i < enemyboard.fields.length; i++) {
-            if ("e" + enemyboard.fields[i].fieldname == temp) {
-                console.log("placeshiphere tmep matched")
-                if (dirvertical == true) {
-                    console.log("dirvert placing")
-                    for (var j = 0; j < enemyshipsize; j++) {
-
-
-
-                        //SOMETIMES ERROR FIRES HERE AS UNDEFINED 
-                        console.log("placing ship tile on " + enemyboard.fields[i + amount * j].fieldname + " fieldstatus " + enemyboard.fields[i + amount * j].fieldname.blocked);
-
-                        tempship.fields.push("#e" + ((enemyboard.fields[i + amount * j].fieldname)));
-
-                        //SOMETIMES ERROR FIRES HERE AS UNDEFINED 
-
-
-                        $("#e" + ((enemyboard.fields[i + amount * j].fieldname))).addClass("eplacedship");
-                        var linenumber = i + amount * j;
-                        enemyboard.fields[linenumber].empty = false;
-                        enemyboard.fields[linenumber].clicked = false;
-                        enemyboard.fields[linenumber].occupied = false;
-                        var leftrestrictednumbers = [0];
-                        var rightrestrictednumbers = [amount - 1];
-
-                        for (q = 1; q <= amount; q++) {
-                            rightrestrictednumbers.push((amount - 1) + (amount * q));
-                            leftrestrictednumbers.push(amount * q);
-                        }
-                        var nonrestricted = true;
-                        for (r = 0; r < amount; r++) {
-                            if (i == leftrestrictednumbers[r]) {
-                                if (i == leftrestrictednumbers[leftrestrictednumbers.length - 1 - enemyshipsize]) {
-                                    console.log("left exception");
-                                    tempship.adjacents.push(linenumber, linenumber + 1, (linenumber - amount) + 1);
-                                    enemyboard.blocked.push(linenumber, linenumber + 1, (linenumber - amount) + 1),
-                                        nonrestricted = false;
-                                } else {
-                                    console.log("left");
-                                    tempship.adjacents.push(linenumber, linenumber + 1, linenumber + amount, (linenumber - amount) + 1, (linenumber + amount) + 1);
-                                    enemyboard.blocked.push(linenumber, linenumber + 1, linenumber + amount, (linenumber - amount) + 1, (linenumber + amount) + 1);
-                                    nonrestricted = false;
-                                } //lefterstricted
-                            } else if (i == rightrestrictednumbers[r]) {
-                                tempship.adjacents.push(linenumber, linenumber - 1, linenumber + amount, linenumber - amount, (linenumber - amount) - 1, (linenumber + amount) - 1);
-                                enemyboard.blocked.push(linenumber, linenumber - 1, linenumber + amount, linenumber - amount, (linenumber - amount) - 1, (linenumber + amount) - 1);
-                                nonrestricted = false;
-                            } //rightrestricted
-                        } //llop for restrictednumbers and creation of adajcents blocked
-                        if (nonrestricted == true) {
-                            tempship.adjacents.push(linenumber, linenumber + 1, linenumber - 1, linenumber + amount, linenumber - amount, (linenumber - amount) + 1, (linenumber - amount) - 1, (linenumber + amount) + 1, (linenumber + amount) - 1);
-                            enemyboard.blocked.push(linenumber, linenumber + 1, linenumber - 1, linenumber + amount, linenumber - amount, (linenumber - amount) + 1, (linenumber - amount) - 1, (linenumber + amount) + 1, (linenumber + amount) - 1);
-                        } //standard nonrestricted procedure
-                        for (x = 0; x < playerboard.blocked.length; x++) {
-                            var tempnuba = enemyboard.blocked[x];
-                            if (tempnuba >= 0 && tempnuba <= enemyboard.fields.length) {
-                                console.log("blocking initiated");
-                                enemyboard.fields[tempnuba].blocked = true;
-                            }
-                        } //limiting blocked range to the board
-
-                    }
-                } ///dirvertical true
-                else {
-                    console.log("dirhoricon launched for placehere")
-                    for (var j = 0; j < enemyshipsize; j++) {
-                        tempship.fields.push("#e" + ((enemyboard.fields[i + j].fieldname)));
-                        $("#e" + ((enemyboard.fields[i + j].fieldname))).addClass("eplacedship");
-                        var linenumber = i + j;
-                        enemyboard.fields[linenumber].empty = false;
-                        enemyboard.fields[linenumber].clicked = true;
-                        enemyboard.fields[linenumber].occupied = true;
-                        var leftrestrictednumbers = [0];
-                        var rightrestrictednumbers = [amount - enemyshipsize];
-                        for (q = 1; q < amount; q++) {
-                            rightrestrictednumbers.push(((amount - 1) + (amount * q)) - (enemyshipsize - 1));
-                            leftrestrictednumbers.push(amount * q);
-                        } //loop for adjacents
-                        var nonrestricted = true;
-                        for (r = 0; r < amount; r++) {
-                            if (i == leftrestrictednumbers[r]) {
-                                if (i == leftrestrictednumbers[leftrestrictednumbers.length - 1]) {
-                                    console.log("workongsddfgsdg");
-                                    nonrestricted = false;
-                                    tempship.adjacents.push(linenumber, linenumber + 1, (linenumber - amount) + 1);
-                                    enemyboard.blocked.push(linenumber, linenumber + 1, (linenumber - amount), (linenumber - amount) + 1);
-                                } else {
-
-                                    tempship.adjacents.push(linenumber, linenumber + 1, linenumber + amount, (linenumber - amount) + 1, (linenumber + amount) + 1);
-                                    enemyboard.blocked.push(linenumber, linenumber + 1, linenumber + amount, (linenumber - amount) + 1, (linenumber + amount) + 1);
-                                    nonrestricted = false;
-                                }
-                            } //if leftrestricted
-                            else if (i == rightrestrictednumbers[r]) {
-                                tempship.adjacents.push(linenumber, linenumber - 1, linenumber + amount, linenumber - amount, (linenumber - amount) - 1, (linenumber + amount) - 1);
-                                enemyboard.blocked.push(linenumber, linenumber - 1, linenumber + amount, linenumber - amount, (linenumber - amount) - 1, (linenumber + amount) - 1);
-                                nonrestricted = false;
-                            } //if rightrestricted
-                        }
-                        if (nonrestricted == true) {
-                            console.log("else why");
-                            tempship.adjacents.push(linenumber, linenumber + 1, linenumber - 1, linenumber + amount, linenumber - amount, (linenumber - amount) + 1, (linenumber - amount) - 1, (linenumber + amount) + 1, (linenumber + amount) - 1);
-                            enemyboard.blocked.push(linenumber, linenumber + 1, linenumber - 1, linenumber + amount, linenumber - amount, (linenumber - amount) + 1, (linenumber - amount) - 1, (linenumber + amount) + 1, (linenumber + amount) - 1);
-                        }
-                    } //main loop for dir horizontal
-                }
-            } // main match condition
-        } // main loop with var i if placeshipaalowed end
-        for (x = 0; x < enemyboard.blocked.length; x++) {
-            var tempnuba = enemyboard.blocked[x];
-            //console.log(tempnuba);
-            if (tempnuba >= 0 && tempnuba < enemyboard.fields.length) {
-                //console.log("enemyblock initiated");
-                enemyboard.fields[tempnuba].blocked = true;
-            }
-        } //limiting blocked to playerboard
-        //console.log("placement done for" + temp + "below ship")
-        //console.log(tempship);
-        if (enemyshipsize == 5) {
-            enemyships.five_deckers.push(tempship);
-        } else if (enemyshipsize == 4) {
-            enemyships.four_deckers.push(tempship);
-        } else if (enemyshipsize == 3) {
-            enemyships.three_deckers.push(tempship);
-        } else if (enemyshipsize == 2) {
-            enemyships.two_deckers.push(tempship);
-        } else if (enemyshipsize == 1) {
-            enemyships.single_deckers.push(tempship);
-        }
-
-        enemyphasecheck()
-        return;
-    } else {
-        shipcheckloop(enemyshipsize);
-        return;
-    } //if placeshipallowed true
-
-};
-
-
-
-
-
-
-
-
-function shipcheckloop(enemyenemyshipsize) {
-    switch (dirvertical) {
-        case true:
-            dirvertical = false;
-            break;
-        case false:
-            dirvertical = true;
-            break;
-    }
-    //unlock above when horizontal debugged
-    //console.log("shipchekloop fired")
-    var blocked = enemyboard.blocked;
-    //console.log("blocked fields: " + blocked)
-    var randomnumber = Math.floor((Math.random() * (amount * amount)));
-    //loop passing only if random choic is not blocked field 
-    for (j = 0; j < blocked.length; j++) {
-        //below filter for preventing placing on adjacent fields
-        if (randomnumber == blocked[j]) {
-            randomnumber = Math.floor((Math.random() * (amount * amount)));
-            j = 0;
-        }
-    }
-    //console.log("randomnumber" + randomnumber);
-    //RANDOMNUMBER PASSED
-    //check for remaining fields
-
-    //temp is id
-    var temp = "e" + enemyboard.fields[randomnumber].fieldname;
-    //console.log("shipchekloop temp" + temp);
-    //lastletters for edges check
-    var lastletters = [];
-    for (k = enemyshipsize; k > 0; k--) {
-        lastletters.push((playerboard.fields[amount * (amount - k)].fieldname).substring(0, 1));
-    }
-    //console.log("lastletters" + lastletters);
-
-    if (dirvertical == true) {
-        console.log("dirvert chjeck launched")
-        //1st check
-        for (m = 0; m < enemyshipsize; m++) {
-
-            //            console.log("vertcheckloop "+m+" "+(randomnumber + amount * m)+" is blocked? "+enemyboard.fields[randomnumber + amount * m].blocked);
-            if ((randomnumber + amount * m) <
-                enemyboard.fields.length && enemyboard.fields[randomnumber + amount * m].blocked == true) {
-                enemyallowed = false;
-                enemyshipsplaceallowed = false;
-                console.log("1st check vert failed");
-                shipcheckloop(enemyenemyshipsize);
-                return;
-            } else if ((randomnumber + amount * m) > enemyboard.fields.length) {
-                enemyallowed = false;
-                enemyshipsplaceallowed = false;
-                console.log("1st check vert failed undef");
-                shipcheckloop(enemyenemyshipsize);
-                return;
-            }
-        }
-        //2nd check
-
-        for (j = 0; j < enemyshipsize; j++) {
-
-            if (temp.substring(1, 2) == lastletters[1] || temp.substring(1, 2) == lastletters[2] || temp.substring(1, 2) == lastletters[3] || allowed == false) {
-                if ((randomnumber + amount * j) < enemyboard.fields.length) {
-                    //!!!!!failed - redo loop
-                    console.log("2nd check vert fail")
-                    shipcheckloop(enemyenemyshipsize);
-                    return;
-                }
-            } else {
-                //                console.log("placeshiphere" + temp)
-                //                enemyshipsplaceallowed = true;
-                //                placeshiphere(temp);
-                if (playerboard.fields[randomnumber + amount * j]) {
-
-                    //console.log(i + " " + j + " " + ((playerboard.fields[i + amount * j].fieldname)));
-                    enemyshipsplaceallowed = true;
-                    placeshiphere(temp);
-                    return;
-                } else {
-                    enemyshipsplaceallowed = false;
-                    shipchekloop(enemyenemyshipsize);
-                    return;
-                }
-            }
-        }
-    }
-    //dirvert not true
-    else {
-        var enemyallowed = true;
-        //firstcheck
-        for (m = 0; m < enemyshipsize; m++) {
-            if ((randomnumber + m) < enemyboard.fields.length && enemyboard.fields[randomnumber + m].blocked == true) {
-                enemyallowed = false;
-                enemyshipsplaceallowed = false;
-                console.log("1st check hor")
-                shipcheckloop(enemyenemyshipsize);
-                return;
-            }
-        }
-        //secondcheck
-        for (j = 0; j < enemyshipsize; j++) {
-
-            if ((amount - enemyshipsize) < parseInt(temp.substr(2, 10)) - 1 || enemyallowed == false) {
-                if (temp.substring(1, 2) == enemyboard.fields[randomnumber + j].fieldname.substring(0, 1)) {
-                    //!!failed-redo
-                    console.log("2nd check hor fail")
-                    shipcheckloop(enemyenemyshipsize);
-                    return;
-
-                }
-                console.log("wtf is this fail")
-                enemyshipsplaceallowed = false;
-                shipcheckloop(enemyenemyshipsize);
-                return;
-
-            } else {
-                //pass!!!!!
-                console.log("2nd check hor pass")
-                enemyshipsplaceallowed = true;
-                placeshiphere(temp);
-                return;
-            }
-        }
-    }
-
-
-    //close if temp==temp_two block
-};
-//!!!!!!!!!!!!!! if not passed, run this loop again shipcheckloop(enemyenemyshipsize)
-function onedeckerphaseloop() {
-
-    enemyshipsize = 1;
-    //one loop for check and place one ship
-    if (enemyphases[currentenemyphase].phaseshipsleft == 0) {
-        enemyphasecheck();
-
-    } else {
-        shipcheckloop();
-    }
-    //placeenemyships();
-}
-
-
-
-function twodeckerphaseloop() {
-
-    enemyshipsize = 2;
-    //one loop for check and place one ship
-    if (enemyphases[currentenemyphase].phaseshipsleft == 0) {
-        enemyphasecheck();
-
-    } else {
-        shipcheckloop();
-    }
-    //placeenemyships();
-}
-
-
-function threedeckerphaseloop() {
-    console.log("three fired")
-
-    enemyshipsize = 3;
-    //one loop for check and place one ship
-    if (enemyphases[currentenemyphase].phaseshipsleft == 0) {
-        enemyphasecheck();
-
-    } else {
-        shipcheckloop();
-    }
-    //placeenemyships();
-}
-
-
-
-function fourdeckerphaseloop() {
-    console.log("fourdeckerllop fired")
-
-    enemyshipsize = 4;
-    //one loop for check and place one ship
-    if (enemyphases[currentenemyphase].phaseshipsleft == 0) {
-        enemyphasecheck();
-
-    } else {
-        shipcheckloop();
-    }
-    //placeenemyships();
-}
-
-
-function fivedeckerphaseloop() {
-    console.log("fivedeckerpahaseloop fired")
-
-    enemyshipsize = 5;
-    //one loop for check and place one ship
-    if (enemyphases[currentenemyphase].phaseshipsleft == 0) {
-        console.log("runnin phasecheck", enemyphases[currentenemyphase].phaseshipsleft == 0);
-        enemyphasecheck();
-
-    } else {
-        shipcheckloop();
-    }
-
-    //placeenemyships();
-}
-
-
-
-function placeenemyships(amount) {
-
-    //shipplaceing for enemy
-    //loop1 - for all phases
-    //loop2 - for each phase
-    //loop3 - for each ship in phase until ships extracted
-    //runnig fieldcheck based on shipshadow for each random field tossed.
-    //when check is ok places a ship and removes one from enemypahses.phaseships
-    //phasecheck, if pahse is 0 change phase, new loop2
-    //run new loop 
-    console.log("enemyphases", enemyphases)
-    console.log("placeenemyships fired");
-    if (enemyphases[0].done == true) {
-        console.log("enemyphases[0] is done" + enemyphases[0])
-        if (enemyphases[1].done == true) {
-            console.log("enemyphases[1] is done" + enemyphases[1])
-            if (enemyphases[2].done == true) {
-                console.log("enemyphases[2] is done" + enemyphases[2])
-                if (enemyphases[3].done == true) {
-                    console.log("enemyphases[3] is done" + enemyphases[3])
-                    if (enemyphases[4].done == true) {
-
-                        console.log("FINITO");
-                        return;
-                    } else {
-                        onedeckerphaseloop();
-                        return;
-                    }
-                } else {
-                    twodeckerphaseloop();
-                    return;
-                }
-            } else {
-                threedeckerphaseloop();
-                return;
-            }
-        } else {
-            fourdeckerphaseloop();
-            return;
-        }
-    } else {
-        console.log("enemyphases[0] is not done" + enemyphases[0])
-        fivedeckerphaseloop();
-        return;
-    }
-
-
-};
-
-
-
-
-
-//END OF ENEMYSHIPPLACING HOLY SHIT
-//var placeenemyships = require('./placeenemyships.js');
-//end of enemyplacing
-
-function showenemy (){
-    
-        if (kliktemp == 1) {
-            $("#demo").carousel('next');
-            kliktemp = 0;
-        } else {
-            $("#demo").carousel('prev');
-            kliktemp = 1;
-        }
-        $(".eplacedship").addClass("placedship");
-        $(".endgame").fadeOut(); 
-};
-
-
-
-
-//CREATE BOARD FUNCTION
-
-function createboard(amount) {
-    //fill board.rows and board.columns
-    for (i = 0; i < amount; i++) {
-        var templetter = String.fromCharCode(i + 65);
-        var tempnumber = 1 + i;
-        playerboard.rows.push(templetter);
-        playerboard.columns.push(tempnumber);
-        enemyboard.rows.push(templetter);
-        enemyboard.columns.push(tempnumber);
-    }
-    //fill board.fields
-    var columncounter = 0;
-    var rowcounter = 0;
-    for (i = 0; i < amount * amount; i++) {
-        if (columncounter == amount) {
-            columncounter = 0;
-            rowcounter++;
-        }
-
-        playerboard.fields[i] = {
-            row: playerboard.rows[rowcounter],
-            column: playerboard.columns[columncounter],
-            fieldname: playerboard.rows[rowcounter] + playerboard.columns[columncounter],
-        };
-        enemyboard.fields[i] = {
-            row: enemyboard.rows[rowcounter],
-            column: enemyboard.columns[columncounter],
-            fieldname: enemyboard.rows[rowcounter] + enemyboard.columns[columncounter],
-        };
-        columncounter += 1;
-    }
-
-    //fill adjacent fields
-
-    for (i = 0; i < playerboard.fields.length; i++) {
-
-        if (i >= amount) {
-
-            playerboard.fields[i].adjacent = [playerboard.fields[i + 1], playerboard.fields[i - 1], playerboard.fields[i + amount], playerboard.fields[i - amount]];
-            enemyboard.fields[i].adjacent = [enemyboard.fields[i + 1], enemyboard.fields[i - 1], enemyboard.fields[i + amount], enemyboard.fields[i - amount]];
-        } else {
-            playerboard.fields[i].adjacent = [playerboard.fields[i + 1], playerboard.fields[i - 1], playerboard.fields[i + amount]];
-            //additional properties to each field
-
-            enemyboard.fields[i].adjacent = [enemyboard.fields[i + 1], enemyboard.fields[i - 1], enemyboard.fields[i + amount]];
-        }
-        //additional properties to each field
-        enemyboard.fields.forEach(function (obj) {
-            obj.empty = true;
-            obj.clicked = false;
-            obj.occupied = false;
-            obj.sunken = false;
-            obj.blocked = false;
-        });
-        playerboard.fields.forEach(function (obj) {
-            obj.empty = true;
-            obj.clicked = false;
-            obj.occupied = false;
-            obj.sunken = false
-        });
-
-    }
-
-    //DOMbuild
-    var playertemplate = $("<div class='playerboard'></div>");
-    $("#playercol").append(playertemplate);
-    var enemytemplate = $("<div class='enemyboard'></div>");
-    $("#enemycol").append(enemytemplate);
-
-    for (i = 0; i < playerboard.fields.length; i++) {
-        var pidname = "p" + playerboard.fields[i].fieldname;
-        var pidname = "p" + playerboard.fields[i].fieldname;
-        var eidname = "e" + enemyboard.fields[i].fieldname;
-        var ptemp = $("<div class='pfield'></div>").attr('id', pidname);
-        var etemp = $("<div class='efield'></div>").attr('id', eidname);
-        $(".playerboard").append(ptemp);
-        $(".enemyboard").append(etemp);
-    }
-    //place enemy ships variables
-
-    placeenemyships(amount);
-
-    //marking function
-    //    for (i = 0; i < enemyboard.fields.length; i++) {
-    //        if (enemyboard.fields[i].occupied) {
-    //            var temp2 = "e" + enemyboard.fields[i].fieldname;
-    //            console.log(temp2);
-    //            $('#' + temp2).addClass("placedship");
-    //        }
-    //    }
-
-
-
-
-    //set height and width of fields
-    var fieldsize = (parseFloat(100 / amount)).toString() + "%";
-    $(".pfield").css("width", fieldsize);
-    $(".pfield").css("height", fieldsize);
-    $(".efield").css("width", fieldsize);
-    $(".efield").css("height", fieldsize);
-
-
-
-    //eventlistener for placing ships
-    //UNCOMMENT TO MAKE IT WORK
-    //$(".pfield").on('click', playerclick);
-
-    //function for for changing direction
-    $(".pfield").bind('contextmenu', function (e) {
-        e.preventDefault();
-        var tempx = removeshipshadow.bind(event.target);
-        tempx();
-        //console.log(removeshipshadow());
-        if (dirvertical == true) {
-            dirvertical = false;
-
-            //            console.log(dirvertical);
-        } else {
-            dirvertical = true;
-
-            //            console.log(dirvertical);
-        }
-        var tempy = shipshadow.bind(event.target);
-        tempy();
-    });
-
-
-
-    //tutaj strzelanie we wroga
-    $(".efield").on('click', enemyclick);
-    currentphase = 0;
-    console.log("phases on start", phases);
-    $(".pfield").on("mouseover", shipshadow);
-    $(".pfield").on("mouseleave", removeshipshadow);
-    $(".pfield").one("click", placeship);
-    $('#text-container').html('Place your ships by clicking on fields, right click to change the direction of the ship<br>Remaining ships: ');
-    $('#text-container').append(shipamount);
-    $('.repositionbtn-two').show();
-
-
-
-    shipplacing();
-}
-
-//creation initiated
-//createboard(10);
-
-console.log("tis is playa" + playerboard);
-console.log("tis is enemy" + enemyboard);
-
-
-
-
-
-//BOOTSTRAP CAROUSEL HACK
-var kliktemp = 1;
-$("#klik").click(function () {
-    if (kliktemp == 1) {
-        $("#demo").carousel('next');
-        kliktemp = 0;
-    } else {
-        $("#demo").carousel('prev');
-        kliktemp = 1;
-    }
-    $(".eplacedship").addClass("placedship");
-    $(".endgame").fadeOut();
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-
-//FUNCTION FOR STARTGAME
-//game logic in another onclick
-refreshed = false;
-
-
-
-
-function turn() {
-    turns++
-    //console.log("game logic");
-    refreshed = true;
-    //hide or change present carousel onclick
-    if (kliktemp == 1) {
-        $("#demo").carousel('next');
-        kliktemp = 0;
-    } else {
-        $("#demo").carousel('prev');
-        kliktemp = 1;
-    }
-}
-
-////////////////////////////////////////////////////////////
-////////////// ENEMYPICKERRRRRRRRRRRRRR ///////////////////
-///////////////////////////////////////////////////////////
-
-var enemyai = {
-    seekingadjacent: false,
-    seekingvertical: null,
-    seekhorizontal: null,
-    misses: 0,
-    //DIRFAILED FILLING UP WITH ARRAYS
-    directionsfailed: [],
-    currentdirection: null,
-    sourcefieldnumber: null,
-    currentfieldnumber: null,
-    nextfield: null,
-    didhit: false,
-    directions: ["top", "right", "bottom", "left"],
-    giverandomdirection: function(){
-        var toremove = this.directionsfailed;
-
-//toremove fills with undef rather than directions, means that undef is pushed? UNDEFS PUSHED
-
-        console.log("TEST 4 toremove, undefs pushed in here?, other dirs lacking", toremove);
-        var dirbank = this.directions.filter(function(direction, index){
-        return toremove.indexOf(direction) < 0;
-        });
-
-
-
-
-        console.log("dirbank", dirbank);
-        var dir = dirbank[Math.floor(Math.random()*dirbank.length)];
-        (dir == undefined || dir == [])? dir = "something went wrong" : dir=dir;
-        console.log("dir is", dir)
-        return dir;
-    }
+exports.SUPPORTED_PLATFORMS = void 0;
+var SUPPORTED_PLATFORMS = {
+  DARWIN: "darwin",
+  LINUX: "linux",
+  WIN32: "win32"
 };
+exports.SUPPORTED_PLATFORMS = SUPPORTED_PLATFORMS;
 
+},{}],7:[function(require,module,exports){
+"use strict";
 
-function setalladjacentpicked(shipfields) {    
-     shipfields.forEach(function(shipfield, shipindex){
-        playerboard.fields.forEach(function(playerfield, playerindex){
-            // console.log("FIELDNAMES", playerfield.fieldname, shipfield.substring(2,4));
-               if (playerfield.fieldname === shipfield.substring(2,4)){
-                   playerfield.adjacent.forEach(function(adjacentield, adjacentindex){
-                   if(adjacentield){adjacentield.picked = true}
-                       console.log("PLAYERFIELDHERE check adjacents below", playerfield);
-                   })
-               };
-         })
-     })
-    console.log("setalladjacent fired");
-console.log("SHIP SUNKEN HERE SHIPFIELDS BLOCK ADJACENT", shipfields);
-console.log("check these fields here", playerboard.fields);
-};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.WORDS = void 0;
+var WORDS = ["ad", "adipisicing", "aliqua", "aliquip", "amet", "anim", "aute", "cillum", "commodo", "consectetur", "consequat", "culpa", "cupidatat", "deserunt", "do", "dolor", "dolore", "duis", "ea", "eiusmod", "elit", "enim", "esse", "est", "et", "eu", "ex", "excepteur", "exercitation", "fugiat", "id", "in", "incididunt", "ipsum", "irure", "labore", "laboris", "laborum", "Lorem", "magna", "minim", "mollit", "nisi", "non", "nostrud", "nulla", "occaecat", "officia", "pariatur", "proident", "qui", "quis", "reprehenderit", "sint", "sit", "sunt", "tempor", "ullamco", "ut", "velit", "veniam", "voluptate"];
+exports.WORDS = WORDS;
 
+},{}],8:[function(require,module,exports){
+"use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "LoremIpsum", {
+  enumerable: true,
+  get: function get() {
+    return _LoremIpsum.default;
+  }
+});
+exports.loremIpsum = void 0;
 
-function losercheck(){
-    var playerlose = true;
-    _.each(playerships, function(shipset){
-        _.each(shipset, function(ship){
-            if (ship.status != "sunken") {
-                playerlose = false;
-            } 
-        })
-    })
-if (playerlose === true) {
-    $(".pfield").off('click', playerclick);
-    $(".efield").off('click', enemyclick);
-    $('body').append("<div class='endgame'><h1>YOU HAVE LOST</h1><br>turns: " + turns + "<br>ships total: " + shipstotal + "<br>hits: " + hits + "<br>missed shots: " + missedshots + "<br><br><button type='button' class='btn btn-primary btn-sx shower'>Show enemy ships</button> <button type='button' class='btn btn-primary btn-sx restarter'>Menu</button> </div>");
-    $('.restarter').click(function () {
-        location.reload();
-    });
-    $(".eplacedship").addClass("placedship");
-    $(".shower").click(function(){
-        console.log("showenemy click fired")
-        showenemy();
-    })
-    return true;
-}
-return false;
-}
+var _words = require("./constants/words");
 
+var _LoremIpsum = _interopRequireDefault(require("./lib/LoremIpsum"));
 
-function randomshot(randomnumber) {    
-   playerboard.fields[randomnumber].picked = true;
-            if (playerboard.fields[randomnumber].occupied) {
-                var pidname = "#p" + playerboard.fields[randomnumber].fieldname;
-                $(pidname).addClass("enemypicked");
-                setTimeout(function () {
-                    $('#text-container').html('HIT! Enemy picks another field');
-                    $('#text-container').shake();
-                    $(pidname).removeClass("placedship");
-                    $(pidname).removeClass("enemypicked");
-                    $(pidname).addClass("sunken");
-                    enemyai.seekingadjacent = true;
-                    enemyai.sourcefieldnumber = randomnumber;
-                    _.each(playerships, function (shipset) {
-                        _.each(shipset, function (ship) {
-                            _.each(ship.fields, function (field) {
-                                console.log("ship field sunken check fieldname", field);
-                                if (pidname == field) {
-                                    ship.hits++
-                                    console.log(ship.hits)
-                                    if (ship.hits == ship.shipsize) {
-                                        ship.status = "sunken";
-                                           enemyai.seekingadjacent = false;
-                                            enemyai.directionsfailed = [];
-                                            enemyai.directionprogress = [];
-                                            enemyai.currentdirection = null;
-                                            enemyai.sourcefield = null;
-                                            enemyai.nextfield = null;
-                                        enemyai.currentfieldnumber = null;
-                                         enemyai.seekingvertical = null;
-     enemyai.seekhorizontal = null;
-     enemyai.didhit = false;
-     console.log("ship sunken")
-                                        //target = null;
-                                    }
-                                }
-                            })
-                        })
-                    })
-                   if (losercheck()){
-                       return;
-                   }
-                    console.log("randomshot on ", pidname, enemyai);
-                    enemypick();
-                }, 2000);
-            } else {
-                var pidname = "#p" + playerboard.fields[randomnumber].fieldname;
-                playerboard.fields[randomnumber].picked = true;
-                $(pidname).addClass("enemypicked");
-                setTimeout(function () {
-                    $('#text-container').html('Miss! Click on the board for next turn');
-                    setTimeout(function () {
-                        $(".pfield").on('click', playerclick);
-                    }, 500);
-                    $(pidname).removeClass("enemypicked");
-                    $(pidname).addClass("enemypicked-done");
-                }, 1500);
-            }  
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function determinefield(newdir){
-    var newdir = newdir;
-    console.log("determinefield fired, currentdir is", enemyai.currentdirection)
-    console.log("TEST3 NEWDIR WORKS? ", newdir)
-    console.log("TEST3a currentfieldnumber passed?", enemyai.currentfieldnumber);
-    var thisdir;
-    switch (newdir){
-    case "top":
-    thisdir = enemyai.currentfieldnumber - amount;
-    break;
-    case "right":
-    thisdir = enemyai.currentfieldnumber + 1;   
-    break;
-    case "bottom":
-    thisdir = enemyai.currentfieldnumber + amount;    
-    break;
-    case "left":
-    thisdir = enemyai.currentfieldnumber - 1;    
-    break;
+var loremIpsum = function loremIpsum() {
+  var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref$count = _ref.count,
+      count = _ref$count === void 0 ? 1 : _ref$count,
+      _ref$format = _ref.format,
+      format = _ref$format === void 0 ? "plain" : _ref$format,
+      _ref$paragraphLowerBo = _ref.paragraphLowerBound,
+      paragraphLowerBound = _ref$paragraphLowerBo === void 0 ? 3 : _ref$paragraphLowerBo,
+      _ref$paragraphUpperBo = _ref.paragraphUpperBound,
+      paragraphUpperBound = _ref$paragraphUpperBo === void 0 ? 7 : _ref$paragraphUpperBo,
+      random = _ref.random,
+      _ref$sentenceLowerBou = _ref.sentenceLowerBound,
+      sentenceLowerBound = _ref$sentenceLowerBou === void 0 ? 5 : _ref$sentenceLowerBou,
+      _ref$sentenceUpperBou = _ref.sentenceUpperBound,
+      sentenceUpperBound = _ref$sentenceUpperBou === void 0 ? 15 : _ref$sentenceUpperBou,
+      _ref$units = _ref.units,
+      units = _ref$units === void 0 ? "sentences" : _ref$units,
+      _ref$words = _ref.words,
+      words = _ref$words === void 0 ? _words.WORDS : _ref$words,
+      _ref$suffix = _ref.suffix,
+      suffix = _ref$suffix === void 0 ? "" : _ref$suffix;
+
+  var options = {
+    random: random,
+    sentencesPerParagraph: {
+      max: paragraphUpperBound,
+      min: paragraphLowerBound
+    },
+    words: words,
+    wordsPerSentence: {
+      max: sentenceUpperBound,
+      min: sentenceLowerBound
+    }
+  };
+  var lorem = new _LoremIpsum.default(options, format, suffix);
+
+  switch (units) {
+    case "paragraphs":
+    case "paragraph":
+      return lorem.generateParagraphs(count);
+
+    case "sentences":
+    case "sentence":
+      return lorem.generateSentences(count);
+
+    case "words":
+    case "word":
+      return lorem.generateWords(count);
+
     default:
-    //returning undef on right for some reason
-    //WIESZA SIE NA TYM////////////////////////////////////////////////////////////////////////////////////////////////
-thisdir = "depleted";
-console.log("TEST 7 directions drained, returning depleted")
-}
-console.log("TEST4 determinefield fired end", thisdir, enemyai);
-console.log("TEST4a thisdir", thisdir);
-console.log(thisdir);
-return thisdir;
-}
+      return "";
+  }
+};
 
+exports.loremIpsum = loremIpsum;
 
-function seekingadjacent(){
-    //validation part
-    console.log("seekingadajcent fired");
-    if(enemyai.currentfieldnumber == null) {
-    console.log(enemyai.currentfieldnumber, "currentfield null setting currentifeld as sourcenumber");
-    enemyai.currentfieldnumber = enemyai.sourcefieldnumber;
-    console.log(enemyai.currentfieldnumber);
-    } 
+},{"./constants/words":7,"./lib/LoremIpsum":9}],9:[function(require,module,exports){
+"use strict";
 
-//currentdir wirks? 
-if(!enemyai.didhit){
-    enemyai.currentdirection = enemyai.giverandomdirection();
-    console.log ("TEST currentdirection works?", enemyai.currentdirection);
-} else {
-    (enemyai.currentdirection === "top" || enemyai.currentdirection === "bottom")? enemyai.seekingvertical = true : enemyai.seekhorizontal = true;
-    if (enemyai.seekingvertical === true) {
-        enemyai.directionsfailed.push("left", "right");
-    } else if (enemyai.seekhorizontal) {
-        enemyai.directionsfailed.push("top", "bottom");
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _formats = require("../constants/formats");
+
+var _lineEndings = require("../constants/lineEndings");
+
+var _generator = _interopRequireDefault(require("../lib/generator"));
+
+var _util = require("../util");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var LoremIpsum =
+/*#__PURE__*/
+function () {
+  function LoremIpsum() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _formats.FORMAT_PLAIN;
+    var suffix = arguments.length > 2 ? arguments[2] : undefined;
+
+    _classCallCheck(this, LoremIpsum);
+
+    _defineProperty(this, "generator", void 0);
+
+    _defineProperty(this, "format", void 0);
+
+    _defineProperty(this, "suffix", void 0);
+
+    if (_formats.FORMATS.indexOf(format.toLowerCase()) === -1) {
+      throw new Error("".concat(format, " is an invalid format. Please use ").concat(_formats.FORMATS.join(" or "), "."));
     }
-}
-    
-//currentdir works 
-    
-var newdir = enemyai.currentdirection;
-//determinefield works? NOT WORKING!!!!!!
-    var nextfieldnumber = determinefield(newdir);
-    if (nextfieldnumber === "depleted") {
-        enemyai.currentfieldnumber=enemyai.sourcefieldnumber;
-        enemyai.nextfieldnumber=null;
-        enemyai.directionsfailed = [];
-        if (enemyai.seekingvertical === true) {
-            enemyai.directionsfailed.push("left", "right");
-        } else if (enemyai.seekhorizontal === true) {
-            enemyai.directionsfailed.push("top", "bottom");
-        }
-        enemyai.didhit = false;
-        enemyai.currentdirection = enemyai.giverandomdirection();
-        newdir = enemyai.currentdirection;
-        enemyai.nextfield = determinefield(enemyai.currentdirection);
-        nextfieldnumber = enemyai.nextfield;
 
-        //if not working then put seekingadjacent here and return
+    this.format = format.toLowerCase();
+    this.suffix = suffix;
+    this.generator = new _generator.default(options);
+  }
+
+  _createClass(LoremIpsum, [{
+    key: "getLineEnding",
+    value: function getLineEnding() {
+      if (this.suffix) {
+        return this.suffix;
+      }
+
+      if (!(0, _util.isReactNative)() && (0, _util.isNode)() && (0, _util.isWindows)()) {
+        return _lineEndings.LINE_ENDINGS.WIN32;
+      }
+
+      return _lineEndings.LINE_ENDINGS.POSIX;
     }
-   console.log("TEST2 determine field works? nextfieldnumber", nextfieldnumber);
-    // enemyai.nextfield = playerboard.fields[nextfieldnumber];
-    enemyai.nextfield = nextfieldnumber;
-    var nextfield = enemyai.nextfield;
+  }, {
+    key: "formatString",
+    value: function formatString(str) {
+      if (this.format === _formats.FORMAT_HTML) {
+        return "<p>".concat(str, "</p>");
+      }
 
-//why undef
-    console.log("nextfieldnumber", nextfieldnumber, "nextfield", nextfield)
-    if (playerboard.fields[nextfieldnumber] == null || playerboard.fields[nextfieldnumber] == undefined){
-    
-    console.log("nextfield null or undef, seeking adjacent again", nextfield);    
-    seekingadjacent();    
-    return;
-    } else if (playerboard.fields[nextfieldnumber].picked){
-
-
-
-        
-// BUGGED ON TOP LAS TIME LOOP FIRING HERE????????????????
-
-
-    //GIVING UNDEF?    
-    enemyai.directionsfailed.push(enemyai.currentdirection);
-    console.log("TEST5 directionsfailed pushing", enemyai.currentdirection)
-    console.log("seekingadajcent but picked, return, nextfield is", playerboard.fields[nextfieldnumber]);    
-    seekingadjacent();    
-    return;    
+      return str;
     }
-    //validated
-    console.log("seekingadajcent on ", nextfield); 
-    //hit or miss
-    if (playerboard.fields[nextfieldnumber].occupied && !playerboard.fields[nextfieldnumber].picked) {
-                var pidname = "#p" + playerboard.fields[nextfieldnumber].fieldname;
-                $(pidname).addClass("enemypicked");
-                playerboard.fields[nextfieldnumber].picked = true;
-                setTimeout(function () {
-                    $('#text-container').html('HIT! Enemy picks another field');
-                    $('#text-container').shake();
-                    $(pidname).removeClass("placedship");
-                    $(pidname).removeClass("enemypicked");
-                    $(pidname).addClass("sunken");
+  }, {
+    key: "formatStrings",
+    value: function formatStrings(strings) {
+      var _this = this;
 
-                    //where does it pass object instead of number? here? what is nectfield, number?
-                    enemyai.currentfieldnumber = enemyai.nextfield;
-                    enemyai.didhit = true;
-                    _.each(playerships, function (shipset) {
-        console.log("searching through ships")
-                        _.each(shipset, function (ship) {
-                            _.each(ship.fields, function (field) {
-                                console.log("ship field sunken check", field);
-                                if (pidname == field) {
-                                    ship.hits++
-                                    console.log("SHIP HITS! ", ship.hits)
-                                    if (ship.hits == ship.shipsize) {
-                                        console.log("TEST 9 SHIPSUNKEN");
-                                        setalladjacentpicked(ship.fields);
-                                        ship.status = "sunken";
-                                           enemyai.seekingadjacent = false;
-                                            enemyai.directionsfailed = [];
-                                            enemyai.directionprogress = [];
-                                            enemyai.currentdirection = null;
-                                            enemyai.sourcefield = null;
-                                            enemyai.nextfield = null;
-                                        enemyai.currentfieldnumber = null;
-                                         enemyai.seekingvertical = null;
-                                        enemyai.seekhorizontal = null;
-                                        enemyai.didhit = false;
-                                        //target = null;
-                                        //STUCK AFTER THIS WHEN RETURN TO SOURCE IS NEEDED
-                                    }
-                                }
-                            })
-                        })
-                    })
-                    if (losercheck()){
-                        return;
-                    }
-                    console.log("still seekadjacent shot on ", pidname, enemyai);
-                    enemypick();
-                }, 2000);
-            } else {
-                var pidname = "#p" + playerboard.fields[nextfieldnumber].fieldname;
-                playerboard.fields[nextfieldnumber].picked = true;
-                if(enemyai.didhit){
-                    enemyai.nextfieldnumber === "depleted";
-                }
-                enemyai.didhit = false;
-                console.log("TEST6 dirfailed on miss pushing undef?", enemyai.currentdirection);
-                //pushing undef?
-                enemyai.directionsfailed.push(enemyai.currentdirection);
-                $(pidname).addClass("enemypicked");
-                setTimeout(function () {
-                    $('#text-container').html('Miss! Click on the board for next turn');
-                    setTimeout(function () {
-                        $(".pfield").on('click', playerclick);
-                    }, 500);
-                    $(pidname).removeClass("enemypicked");
-                    $(pidname).addClass("enemypicked-done");
-                }, 1500);
-            }
-}
+      return strings.map(function (str) {
+        return _this.formatString(str);
+      });
+    }
+  }, {
+    key: "generateWords",
+    value: function generateWords(num) {
+      return this.formatString(this.generator.generateRandomWords(num));
+    }
+  }, {
+    key: "generateSentences",
+    value: function generateSentences(num) {
+      return this.formatString(this.generator.generateRandomParagraph(num));
+    }
+  }, {
+    key: "generateParagraphs",
+    value: function generateParagraphs(num) {
+      var makeString = this.generator.generateRandomParagraph.bind(this.generator);
+      return this.formatStrings((0, _util.makeArrayOfStrings)(num, makeString)).join(this.getLineEnding());
+    }
+  }]);
 
+  return LoremIpsum;
+}();
 
+var _default = LoremIpsum;
+exports.default = _default;
 
-function enemypick() {
-    if (!enemyai.seekingadjacent) {
-        var randomnumber =  Math.floor((Math.random() * (playerboard.fields.length)));
-        (playerboard.fields[randomnumber].picked)? enemypick() : randomshot(randomnumber); 
+},{"../constants/formats":4,"../constants/lineEndings":5,"../lib/generator":10,"../util":16}],10:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _words = require("../constants/words");
+
+var _util = require("../util");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Generator =
+/*#__PURE__*/
+function () {
+  function Generator() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        _ref$sentencesPerPara = _ref.sentencesPerParagraph,
+        sentencesPerParagraph = _ref$sentencesPerPara === void 0 ? {
+      max: 7,
+      min: 3
+    } : _ref$sentencesPerPara,
+        _ref$wordsPerSentence = _ref.wordsPerSentence,
+        wordsPerSentence = _ref$wordsPerSentence === void 0 ? {
+      max: 15,
+      min: 5
+    } : _ref$wordsPerSentence,
+        random = _ref.random,
+        seed = _ref.seed,
+        _ref$words = _ref.words,
+        words = _ref$words === void 0 ? _words.WORDS : _ref$words;
+
+    _classCallCheck(this, Generator);
+
+    _defineProperty(this, "sentencesPerParagraph", void 0);
+
+    _defineProperty(this, "wordsPerSentence", void 0);
+
+    _defineProperty(this, "random", void 0);
+
+    _defineProperty(this, "words", void 0);
+
+    if (sentencesPerParagraph.min > sentencesPerParagraph.max) {
+      throw new Error("Minimum number of sentences per paragraph (".concat(sentencesPerParagraph.min, ") cannot exceed maximum (").concat(sentencesPerParagraph.max, ")."));
+    }
+
+    if (wordsPerSentence.min > wordsPerSentence.max) {
+      throw new Error("Minimum number of words per sentence (".concat(wordsPerSentence.min, ") cannot exceed maximum (").concat(wordsPerSentence.max, ")."));
+    }
+
+    this.sentencesPerParagraph = sentencesPerParagraph;
+    this.words = words;
+    this.wordsPerSentence = wordsPerSentence;
+
+    if (random) {
+      this.random = random;
     } else {
-        seekingadjacent();
-    }   
+      this.random = Math.random;
+    }
+  }
+
+  _createClass(Generator, [{
+    key: "generateRandomInteger",
+    value: function generateRandomInteger(min, max) {
+      return Math.floor(this.random() * (max - min + 1) + min);
+    }
+  }, {
+    key: "generateRandomWords",
+    value: function generateRandomWords(num) {
+      var _this = this;
+
+      var _this$wordsPerSentenc = this.wordsPerSentence,
+          min = _this$wordsPerSentenc.min,
+          max = _this$wordsPerSentenc.max;
+      var length = num || this.generateRandomInteger(min, max);
+      return (0, _util.makeArrayOfLength)(length).reduce(function (accumulator, index) {
+        return "".concat(_this.pluckRandomWord(), " ").concat(accumulator);
+      }, "").trim();
+    }
+  }, {
+    key: "generateRandomSentence",
+    value: function generateRandomSentence(num) {
+      return "".concat((0, _util.capitalize)(this.generateRandomWords(num)), ".");
+    }
+  }, {
+    key: "generateRandomParagraph",
+    value: function generateRandomParagraph(num) {
+      var _this2 = this;
+
+      var _this$sentencesPerPar = this.sentencesPerParagraph,
+          min = _this$sentencesPerPar.min,
+          max = _this$sentencesPerPar.max;
+      var length = num || this.generateRandomInteger(min, max);
+      return (0, _util.makeArrayOfLength)(length).reduce(function (accumulator, index) {
+        return "".concat(_this2.generateRandomSentence(), " ").concat(accumulator);
+      }, "").trim();
+    }
+  }, {
+    key: "pluckRandomWord",
+    value: function pluckRandomWord() {
+      var min = 0;
+      var max = this.words.length - 1;
+      var index = this.generateRandomInteger(min, max);
+      return this.words[index];
+    }
+  }]);
+
+  return Generator;
+}();
+
+var _default = Generator;
+exports.default = _default;
+
+},{"../constants/words":7,"../util":16}],11:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+/**
+ * @param str  A string that may or may not be capitalized.
+ * @returns    A capitalized string.
+ */
+var capitalize = function capitalize(str) {
+  var trimmed = str.trim();
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+};
+
+var _default = capitalize;
+exports.default = _default;
+
+},{}],12:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _child_process = require("child_process");
+
+var _ = require(".");
+
+/**
+ * Copy text to the clipboard using a platform's native command.
+ * @param  text  The text to copy.
+ * @returns      A promise that resolves with the text to copy.
+ */
+var copyToClipboard = function copyToClipboard(text) {
+  return new Promise(function (resolve, reject) {
+    try {
+      var platform = (0, _.getPlatform)();
+
+      if ((0, _.isSupportedPlatform)(platform) === false) {
+        throw new Error("Copy is not supported for ".concat(platform));
+      }
+
+      var command = "echo \"".concat(text, "\" | ").concat((0, _.getCopyCommand)(platform));
+      (0, _child_process.exec)(command, function (error, stdout, stderr) {
+        /* istanbul ignore if */
+        if (error) {
+          return reject(error);
+        }
+
+        if (stderr) {
+          return reject(new Error(stderr));
+        }
+
+        return resolve(text);
+      });
+    } catch (error) {
+      return reject(error);
+    }
+  });
+};
+
+var _default = copyToClipboard;
+exports.default = _default;
+
+},{".":16,"child_process":1}],13:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _commands = require("../constants/commands");
+
+var _platforms = require("../constants/platforms");
+
+/**
+ * @param platform  The process platform.
+ * @returns         The copy command for the process platform.
+ */
+var getCopyCommand = function getCopyCommand() {
+  var platform = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+
+  switch (platform.toLowerCase()) {
+    case _platforms.SUPPORTED_PLATFORMS.DARWIN:
+      return _commands.COPY.DARWIN;
+
+    case _platforms.SUPPORTED_PLATFORMS.WIN32:
+      return _commands.COPY.WIN32;
+
+    case _platforms.SUPPORTED_PLATFORMS.LINUX:
+    default:
+      return _commands.COPY.LINUX;
+  }
+};
+
+var _default = getCopyCommand;
+exports.default = _default;
+
+},{"../constants/commands":2,"../constants/platforms":6}],14:[function(require,module,exports){
+(function (process){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _errors = require("../constants/errors");
+
+/**
+ * @returns  The process platform.
+ * @throws
+ */
+var getPlatform = function getPlatform() {
+  if (!process || typeof process.platform !== "string") {
+    throw new Error(_errors.CANNOT_DETERMINE_PLATFORM);
+  }
+
+  return process.platform;
+};
+
+var _default = getPlatform;
+exports.default = _default;
+
+}).call(this,require('_process'))
+},{"../constants/errors":3,"_process":24}],15:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _package = require("../../package.json");
+
+/**
+ * @returns  The package version.
+ */
+var getVersion = function getVersion() {
+  return _package.version;
+};
+
+var _default = getVersion;
+exports.default = _default;
+
+},{"../../package.json":23}],16:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "capitalize", {
+  enumerable: true,
+  get: function get() {
+    return _capitalize.default;
+  }
+});
+Object.defineProperty(exports, "copyToClipboard", {
+  enumerable: true,
+  get: function get() {
+    return _copyToClipboard.default;
+  }
+});
+Object.defineProperty(exports, "getCopyCommand", {
+  enumerable: true,
+  get: function get() {
+    return _getCopyCommand.default;
+  }
+});
+Object.defineProperty(exports, "getPlatform", {
+  enumerable: true,
+  get: function get() {
+    return _getPlatform.default;
+  }
+});
+Object.defineProperty(exports, "getVersion", {
+  enumerable: true,
+  get: function get() {
+    return _getVersion.default;
+  }
+});
+Object.defineProperty(exports, "isNode", {
+  enumerable: true,
+  get: function get() {
+    return _isNode.default;
+  }
+});
+Object.defineProperty(exports, "isReactNative", {
+  enumerable: true,
+  get: function get() {
+    return _isReactNative.default;
+  }
+});
+Object.defineProperty(exports, "isSupportedPlatform", {
+  enumerable: true,
+  get: function get() {
+    return _isSupportedPlatform.default;
+  }
+});
+Object.defineProperty(exports, "isWindows", {
+  enumerable: true,
+  get: function get() {
+    return _isWindows.default;
+  }
+});
+Object.defineProperty(exports, "makeArrayOfLength", {
+  enumerable: true,
+  get: function get() {
+    return _makeArrayOfLength.default;
+  }
+});
+Object.defineProperty(exports, "makeArrayOfStrings", {
+  enumerable: true,
+  get: function get() {
+    return _makeArrayOfStrings.default;
+  }
+});
+
+var _capitalize = _interopRequireDefault(require("./capitalize"));
+
+var _copyToClipboard = _interopRequireDefault(require("./copyToClipboard"));
+
+var _getCopyCommand = _interopRequireDefault(require("./getCopyCommand"));
+
+var _getPlatform = _interopRequireDefault(require("./getPlatform"));
+
+var _getVersion = _interopRequireDefault(require("./getVersion"));
+
+var _isNode = _interopRequireDefault(require("./isNode"));
+
+var _isReactNative = _interopRequireDefault(require("./isReactNative"));
+
+var _isSupportedPlatform = _interopRequireDefault(require("./isSupportedPlatform"));
+
+var _isWindows = _interopRequireDefault(require("./isWindows"));
+
+var _makeArrayOfLength = _interopRequireDefault(require("./makeArrayOfLength"));
+
+var _makeArrayOfStrings = _interopRequireDefault(require("./makeArrayOfStrings"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+},{"./capitalize":11,"./copyToClipboard":12,"./getCopyCommand":13,"./getPlatform":14,"./getVersion":15,"./isNode":17,"./isReactNative":18,"./isSupportedPlatform":19,"./isWindows":20,"./makeArrayOfLength":21,"./makeArrayOfStrings":22}],17:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+/**
+ * @returns  True if the runtime is NodeJS.
+ */
+var isNode = function isNode() {
+  return typeof module !== "undefined" && !!module.exports;
+};
+
+var _default = isNode;
+exports.default = _default;
+
+},{}],18:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+/**
+ * @returns  True if runtime is ReactNative.
+ */
+var isReactNative = function isReactNative() {
+  return typeof navigator !== "undefined" && navigator.product === "ReactNative";
+};
+
+var _default = isReactNative;
+exports.default = _default;
+
+},{}],19:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _platforms = require("../constants/platforms");
+
+/**
+ * @param platform  The process platform.
+ * @returns         True if the process platform is supported.
+ */
+var isSupportedPlatform = function isSupportedPlatform(platform) {
+  return Object.values(_platforms.SUPPORTED_PLATFORMS).indexOf(platform.toLowerCase()) !== -1;
+};
+
+var _default = isSupportedPlatform;
+exports.default = _default;
+
+},{"../constants/platforms":6}],20:[function(require,module,exports){
+(function (process){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _platforms = require("../constants/platforms");
+
+/**
+ * @returns True if process is windows.
+ */
+var isWindows = function isWindows() {
+  return typeof process !== "undefined" && process.platform === _platforms.SUPPORTED_PLATFORMS.WIN32;
+};
+
+var _default = isWindows;
+exports.default = _default;
+
+}).call(this,require('_process'))
+},{"../constants/platforms":6,"_process":24}],21:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+/**
+ * @param length Length "x".
+ * @returns      An array of indexes of length "x".
+ */
+var makeArrayOfLength = function makeArrayOfLength() {
+  var length = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  return Array.apply(null, Array(length)).map(function (item, index) {
+    return index;
+  });
+};
+
+var _default = makeArrayOfLength;
+exports.default = _default;
+
+},{}],22:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _ = require(".");
+
+/**
+ * @param length  Length "x".
+ * @returns       An array of strings of length "x".
+ */
+var makeArrayOfStrings = function makeArrayOfStrings(length, makeString) {
+  var arr = (0, _.makeArrayOfLength)(length);
+  return arr.map(function () {
+    return makeString();
+  });
+};
+
+var _default = makeArrayOfStrings;
+exports.default = _default;
+
+},{".":16}],23:[function(require,module,exports){
+module.exports={
+  "_from": "lorem-ipsum",
+  "_id": "lorem-ipsum@2.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-MgsNPLB49Zwk2ah8kSG5T3X75JQsEC3tsI7QsWORuiIe2DTUq4b9QXSG7dkjHoO1lKKaxVM69MNiVssTfp+zGQ==",
+  "_location": "/lorem-ipsum",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "lorem-ipsum",
+    "name": "lorem-ipsum",
+    "escapedName": "lorem-ipsum",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/lorem-ipsum/-/lorem-ipsum-2.0.0.tgz",
+  "_shasum": "e7b8807bcd9ff9e5e9b23abc6c432e8596dbc24b",
+  "_spec": "lorem-ipsum",
+  "_where": "C:\\Users\\mostr\\repos\\testa",
+  "author": {
+    "name": "Nickolas Kenyeres",
+    "email": "nkenyeres@gmail.com",
+    "url": "http://knicklabs.github.com"
+  },
+  "bin": {
+    "lorem-ipsum": "dist/bin/lorem-ipsum.bin.js"
+  },
+  "bugs": {
+    "url": "https://github.com/knicklabs/node-lorem-ipsum/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "commander": "^2.17.1"
+  },
+  "deprecated": false,
+  "description": "Generates passages of lorem ipsum text suitable for use as placeholder copy in web pages, graphics, and more. Works in the browser, NodeJS, and React Native.",
+  "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/plugin-proposal-class-properties": "^7.2.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-typescript": "^7.1.0",
+    "@types/jest": "^23.3.1",
+    "@types/node": "^10.9.3",
+    "@types/random-seed": "^0.3.3",
+    "babel-loader": "^8.0.0",
+    "coveralls": "^3.0.2",
+    "jest": "^24.1.0",
+    "nock-exec": "^0.1.0",
+    "nyc": "^13.3.0",
+    "prettier": "^1.14.2",
+    "release-it": "^10.1.0",
+    "ts-jest": "^23.1.4",
+    "tslint": "^5.11.0",
+    "typescript": "^3.2.2"
+  },
+  "engines": {
+    "node": ">= 8.x",
+    "npm": ">= 5.x"
+  },
+  "homepage": "https://github.com/knicklabs/node-lorem-ipsum#readme",
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/bin/**/*.ts",
+      "!src/constants/cli.ts",
+      "!src/constants/regex.ts",
+      "!src/@types/**/*.d.ts"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "keywords": [
+    "lorem",
+    "ipsum",
+    "placeholder",
+    "text",
+    "dummy",
+    "filler"
+  ],
+  "license": "ISC",
+  "main": "dist/index",
+  "name": "lorem-ipsum",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/knicklabs/node-lorem-ipsum.git"
+  },
+  "scripts": {
+    "build": "npm run build:types && npm run build:js && npm run build:exec",
+    "build:exec": "sed -i '1i #!/usr/bin/env node' dist/bin/lorem-ipsum.bin.js",
+    "build:js": "rm -rf dist && babel src --ignore '**/*.test.ts' --out-dir dist --extensions \".ts,.tsx\" --source-maps inline",
+    "build:types": "rm -rf types && tsc --emitDeclarationOnly",
+    "coverage": "nyc report --temp-directory=coverage --reporter=text-lcov | coveralls",
+    "lint:check": "tslint -c tslint.json src/**/*.ts",
+    "release": "npm run build && release-it",
+    "release:dry": "npm run build && release-it --dry-run",
+    "test": "jest --coverage",
+    "type-check": "tsc --noEmit"
+  },
+  "types": "types/index.d.ts",
+  "version": "2.0.0"
 }
 
+},{}],24:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
 
 
 
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
 
-
-
-
-////////////////////////////////////////////////////////////
-//////////////ENEMYPICKERRRRRRRRRRRRRR/////////////////////
-////////////////////////////////////////////////////////////
-
-
-
-
-
-//number of ships
-var shipamount = 0;
-//counting down remaining ships
-var clickcounter = 0;
-
-//WHOLE FIELD CLICKING LOGIC DAMN
-//function placingshipsclicker() {
-
-
-function boardcreationcheck(e) {
-
-    amount = parseInt($('#fieldamount').val());
-    //console.log("amount is " + amount);
-    phases.forEach(function (phase, index) {
-        shipamount += phase.phaseshipsleft;
-    });
-    createboard(amount);
-    $('#popupscontainer').hide();
-    $('#demo').fadeIn();
-    console.log("boardcreationcheck fired", phases);
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
 }
 
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
 
-//events
-$('#createbttn').on('click', boardcreationcheck);
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
 
-},{"./globals.js":1}]},{},[2]);
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],25:[function(require,module,exports){
+let drupal = "<svg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='70px' height='70px' x='0px' y='0px'  viewBox='-249 83.1 381 416' enable-background='new -249 83.1 381 416' xml:space='preserve'><g><g><path fill='#cccccc' d='M-69.7,312.5c-29.1,0-52.7,23.6-52.7,52.7c0,29.1,23.6,52.7,52.7,52.7c29.1,0,52.7-23.6,52.7-52.7 C-17,336.1-40.6,312.5-69.7,312.5z'/> </g> <g> <path fill='#cccccc' d='M-4.1,302.4c15.6,16.3,25.2,38.4,25.2,62.8c0,30.9-15.4,58.1-38.9,74.5c43.5-13.4,79.5-46.1,95.6-85.7 c22.3-54.8,1.5-96-33.3-133.4c1.1,4.8,1.7,9.9,1.7,15C46.1,267.4,24.9,294.1-4.1,302.4z'/> </g> <g> <path fill='#cccccc' d='M-63.7,235.7c0,22.3,18.1,40.3,40.3,40.3S17,257.9,17,235.7c0-22.3-18.1-40.3-40.3-40.3 S-63.7,213.4-63.7,235.7z'/> </g> <g> <path fill='#cccccc' d='M-139.2,423.7c-13.3-15.8-21.3-36.2-21.3-58.5c0-46.5,34.9-84.8,80-90.1c-7.7-11.2-12.3-24.8-12.3-39.4c0-38.4,31.1-69.4,69.5-69.4c3.2,0,6.3,0.2,9.3,0.6c-22.7-19.6-45.4-39.5-63.3-61.2c9.1,95.2-86.7,60.6-122.2,148.4C-223.2,312.9-201.8,385.6-139.2,423.7z'/></g></g></svg>";
+
+module.exports = drupal;
+},{}],26:[function(require,module,exports){
+const LoremIpsum = require("lorem-ipsum").LoremIpsum;
+const drupal = require('./../img/drupal')
+const lorem = new LoremIpsum({
+    sentencesPerParagraph: {
+      max: 8,
+      min: 4
+    },
+    wordsPerSentence: {
+      max: 16,
+      min: 4
+    }
+  });
+
+
+
+let bluebrackets = {
+  maincolor: "primary",
+    mainclass: "mainclass",
+    mainheading: "Heading",
+    content: lorem.generateWords(6),
+    subheading: false,
+    reddot: true,
+    bracketsarray: [
+    {
+        heading: "<h5>Heading</h5>",
+        content: "<p>"+lorem.generateWords(10)+"</p>",
+        picture: "<svg width='60' height='60' viewBox='0 0 256 255' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet'><path d='M18.124 127.5c0 43.296 25.16 80.711 61.646 98.442L27.594 82.986a108.965 108.965 0 0 0-9.47 44.514zm183.221-5.52c0-13.517-4.856-22.879-9.02-30.165-5.545-9.01-10.742-16.64-10.742-25.65 0-10.055 7.626-19.415 18.368-19.415.485 0 .944.06 1.417.088-19.46-17.829-45.387-28.714-73.863-28.714-38.213 0-71.832 19.606-91.39 49.302 2.566.077 4.984.13 7.039.13 11.44 0 29.15-1.387 29.15-1.387 5.897-.348 6.592 8.312.702 9.01 0 0-5.926.697-12.52 1.042L100.32 194.7l23.937-71.79-17.042-46.692c-5.89-.345-11.47-1.042-11.47-1.042-5.894-.346-5.203-9.358.691-9.01 0 0 18.064 1.388 28.811 1.388 11.44 0 29.151-1.388 29.151-1.388 5.9-.348 6.594 8.312.702 9.01 0 0-5.938.697-12.52 1.042l39.529 117.581 10.91-36.458c4.728-15.129 8.327-25.995 8.327-35.36zm-71.921 15.088l-32.818 95.363a109.376 109.376 0 0 0 30.899 4.456c12.737 0 24.952-2.202 36.323-6.2a9.605 9.605 0 0 1-.779-1.507l-33.625-92.112zm94.058-62.045c.47 3.484.737 7.224.737 11.247 0 11.1-2.073 23.577-8.317 39.178l-33.411 96.6c32.518-18.963 54.39-54.193 54.39-94.545.002-19.017-4.856-36.9-13.4-52.48zM127.505 0C57.2 0 0 57.196 0 127.5c0 70.313 57.2 127.507 127.505 127.507 70.302 0 127.51-57.194 127.51-127.507C255.014 57.196 197.808 0 127.506 0zm0 249.163c-67.08 0-121.659-54.578-121.659-121.663 0-67.08 54.576-121.654 121.659-121.654 67.078 0 121.652 54.574 121.652 121.654 0 67.085-54.574 121.663-121.652 121.663z' fill='#cccccc'/></svg>",
+        classes: "bracket"
+    },
+    {
+        heading: "<h5>Heading</h5>",
+        content: "<p>"+lorem.generateWords(15)+"</p>",
+        picture: "",
+        classes: "bracket"
+    },
+    {
+        heading: "<h5>Ultra Mega Super Long Heading</h5>",
+        content: "<p>"+lorem.generateWords(30)+"</p>",
+        picture: "",
+        classes: "bracket"
+    }
+]}
+
+
+let greybrackets = {
+    maincolor: "primary",
+    mainclass: "mainclass",
+    mainheading: "Heading",
+    content: lorem.generateWords(6),
+    subheading: "Heading",
+    reddot: false,
+    bracketsarray: [
+    {
+        heading: "<h5>Heading</h5>",
+        content: "<p>"+lorem.generateWords(10)+"</p>",
+        picture: drupal,
+        classes: "bracket"
+    },
+    {
+        heading: "<h5>Heading</h5>",
+        content: "<p>"+lorem.generateWords(15)+"</p>",
+        picture: "",
+        classes: "bracket"
+    },
+    {
+        heading: "<h5>Ultra Mega Super Long Heading</h5>",
+        content: "<p>"+lorem.generateWords(30)+"</p>",
+        picture: "",
+        classes: "bracket"
+    }
+]}
+
+module.exports = [bluebrackets, greybrackets];
+},{"./../img/drupal":25,"lorem-ipsum":8}],27:[function(require,module,exports){
+
+let generateBrackets = function (target, brackets, variantclass) {
+let bracketlements = "";
+let picture; 
+brackets.bracketsarray.forEach(function (element) {
+    picture = element.picture? element.picture : "";
+    bracketlements = bracketlements + "<div class='bcolumn col-sm-12 col-md-12 col-lg-4 col-xl-4'><div class='"+element.classes+"'>"+element.heading+element.content+picture+"</div></div>";  
+});
+
+let mainheading = brackets.mainheading? "<h1>"+brackets.mainheading+"</h1>":"";
+let content = brackets.content? "<p class='bcontent'>"+brackets.content+"</p>":"";
+let reddot = brackets.reddot? "<div class='reddot'></div>":"";
+let subheading = brackets.subheading? "<h3>"+brackets.subheading+"</h3>":"";
+
+$(target).append("<div class='bracketsmodule "+variantclass+"'>"+mainheading+content+subheading+"<div class='bracketscontainer container'><div class='row'>"+bracketlements+"</div></div></div>").append(reddot);
+}
+
+module.exports = generateBrackets;
+},{}],28:[function(require,module,exports){
+let generateBrackets = require('./generateBrackets.js');
+let brackets = require('./Brackets.js');
+
+generateBrackets('body', brackets[0]);
+generateBrackets('body', brackets[1], "greyvariant");
+
+
+},{"./Brackets.js":26,"./generateBrackets.js":27}]},{},[28]);
